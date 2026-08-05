@@ -1,0 +1,74 @@
+# Dev-only compose (hot reload). For full-stack production, use ../docker-compose.yml
+services:
+  api:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: stackforge-api
+    ports:
+      - "8000:4000"
+      - "4000:4000"
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: postgres
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      DATABASE_URL: postgresql+psycopg2://stackforge:stackforge_secret@postgres:5432/stackforge
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - .:/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 4000 --reload
+
+  worker:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    container_name: stackforge-worker
+    env_file:
+      - .env
+    environment:
+      POSTGRES_HOST: postgres
+      REDIS_URL: redis://redis:6379/0
+      CELERY_BROKER_URL: redis://redis:6379/1
+      CELERY_RESULT_BACKEND: redis://redis:6379/2
+      DATABASE_URL: postgresql+psycopg2://stackforge:stackforge_secret@postgres:5432/stackforge
+    depends_on:
+      - api
+      - redis
+      - postgres
+    command: celery -A app.celery_app.celery_app worker --loglevel=info
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: stackforge-postgres
+    environment:
+      POSTGRES_USER: stackforge
+      POSTGRES_PASSWORD: stackforge_secret
+      POSTGRES_DB: stackforge
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U stackforge -d stackforge"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: stackforge-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
