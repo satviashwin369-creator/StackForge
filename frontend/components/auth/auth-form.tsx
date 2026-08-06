@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Eye, EyeOff, Layers, Loader2, CheckCircle2, X } from "lucide-react";
-import { ApiClientError } from "@/lib/api-client";
+import { ApiClientError, setAuthToken } from "@/lib/api-client";
 import { useAuthStore } from "@/stores/auth-store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -42,14 +42,18 @@ export function AuthForm({ mode }: AuthFormProps) {
       await login("demo@stackforge.io", "StackForge123!");
     } catch {
       // Fallback local auth state
+      setAuthToken("demo-token-123");
+
       useAuthStore.setState({
-        token: "demo-token-123",
         user: {
           id: "demo-user",
           name: provider === "github" ? "GitHub User" : "Google User",
           email: `${provider}@stackforge.io`,
           avatar: provider === "github" ? "GH" : "GG",
+          role: "Developer",
         },
+        isAuthenticated: true,
+        isLoading: false,
       });
     } finally {
       setSocialLoading(null);
@@ -87,20 +91,24 @@ export function AuthForm({ mode }: AuthFormProps) {
       router.push("/dashboard");
     } catch (err) {
       // If API error or backend offline, gracefully fall back to demo sign-in
-      if (err instanceof ApiClientError && err.status === 401) {
+      if (err instanceof ApiClientError && err.payload.status === 401) {
         setError("Invalid credentials. Try demo@stackforge.io / StackForge123!");
         setLoading(false);
         return;
       }
       // Demo fallback login when backend is offline
+      setAuthToken("demo-token-123");
+
       useAuthStore.setState({
-        token: "demo-token-123",
         user: {
           id: "demo-user",
           name: full_name || "Alex Müller",
           email: email || "demo@stackforge.io",
           avatar: "AM",
-        },
+          role: "Developer",
+       },
+       isAuthenticated: true,
+       isLoading: false,
       });
       router.push("/dashboard");
     } finally {
