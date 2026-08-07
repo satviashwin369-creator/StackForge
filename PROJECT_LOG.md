@@ -2,29 +2,46 @@
 
 ## Project Overview
 
-StackForge is a full-stack Internal Developer Platform (IDP) inspired by modern DevOps platforms like Portainer, Harness, and GitLab.
+StackForge is a production-style Internal Developer Platform (IDP) inspired by modern DevOps platforms like Portainer, Harness, and GitLab.
 
-The goal is to build a production-style developer platform demonstrating modern Cloud and DevOps practices including authentication, APIs, containers, CI/CD, Kubernetes, infrastructure automation, and observability.
+The goal of StackForge is to build a real-world Cloud + DevOps portfolio project demonstrating:
+
+- Full-stack application development
+- Authentication systems
+- API architecture
+- Containerization
+- CI/CD automation
+- Kubernetes orchestration
+- Infrastructure as Code
+- GitOps workflows
+- Monitoring and Observability
+
 
 ---
 
-# Tech Stack
+# Technology Stack
 
 ## Frontend
+
 - Next.js 16
 - React
 - TypeScript
 - Tailwind CSS
 - Zustand
 
+
 ## Backend
+
 - FastAPI
+- Python
 - SQLAlchemy
 - PostgreSQL
 - Redis
 - JWT Authentication
 
+
 ## DevOps
+
 - Docker
 - Docker Compose
 - Kubernetes
@@ -34,105 +51,223 @@ The goal is to build a production-style developer platform demonstrating modern 
 - Prometheus
 - Grafana
 - Loki
+- Jaeger
+
+
+## Cloud
+
+- AWS
+
 
 ---
 
-# Current Progress
+# Development Progress
 
-## Phase 1 — Foundation ✅ COMPLETE
+
+# Phase 1 — Foundation ✅ COMPLETE
+
 
 Completed:
 
-- [x] Git initialized
+- [x] Git repository initialized
 - [x] GitHub repository created
-- [x] Project structure created
-- [x] Docker environment prepared
+- [x] Project folder structure created
+- [x] Frontend environment setup
+- [x] Backend environment setup
 - [x] PostgreSQL configured
 - [x] Redis configured
-- [x] Backend foundation created
-- [x] Frontend foundation created
-- [x] API structure prepared
-- [x] Authentication architecture planned
+- [x] API architecture planned
+- [x] Development workflow created
 
 
 ---
 
-# Phase 2 — Authentication ✅ COMPLETE
+# Phase 2 — Core Platform Development
 
-## Milestone 1 — Frontend Login Integration
 
-Status:
-✅ Complete
+## Milestone 1 — Frontend Authentication ✅ COMPLETE
+
 
 Completed:
-- Login page implemented
-- Authentication UI connected
-- OAuth authentication flow added
-- Google OAuth integrated
-- GitHub OAuth integrated
+
+- [x] Login page implemented
+- [x] Signup page implemented
+- [x] Authentication UI created
+- [x] Google OAuth integration
+- [x] GitHub OAuth integration
+- [x] Frontend authentication flow completed
+- [x] Dashboard redirect after authentication
 
 
 ---
 
-## Milestone 2 — Frontend Signup Integration
+## Milestone 2 — Backend Authentication Integration ✅ COMPLETE
 
-Status:
-✅ Complete
 
 Completed:
-- Signup page implemented
-- Signup authentication flow completed
-- Redirect after signup working
+
+- [x] FastAPI authentication APIs
+- [x] Backend authentication flow
+- [x] Database user model
+- [x] PostgreSQL user storage
+- [x] Frontend and backend communication
+- [x] Authentication API integration
 
 
 ---
 
-## Milestone 3 — Authentication State Management
+## Milestone 3 — JWT Storage & Session Persistence ✅ COMPLETE
 
-Status:
-✅ Complete
 
 Completed:
-- Zustand auth store implemented
-- Authentication state handling added
-- Token handling implemented
+
+- [x] JWT token generation
+- [x] JWT token handling
+- [x] Zustand authentication store
+- [x] Token persistence
+- [x] Session restoration after refresh
+- [x] Authentication state management
 
 
 ---
 
-## Milestone 4 — Protected Routes
-
-Status:
-✅ Complete
-
-Completed:
-- Dashboard protection implemented
-- Authenticated users can access dashboard
-- Unauthenticated users redirected
+## Milestone 4 — Protected Routes & Authorization ⬜ NEXT
 
 
----
+Tasks:
 
-## Milestone 5 — Logout
-
-Status:
-✅ Complete
-
-Completed:
-- Logout functionality implemented
-- Auth state clearing implemented
+- [ ] Backend JWT verification middleware
+- [ ] Protected API endpoints
+- [ ] Frontend route guards
+- [ ] Authorization logic
+- [ ] User permission handling
 
 
 ---
 
-## Milestone 6 — Session Persistence
+## Milestone 5 — Dashboard API Integration ⬜
 
-Status:
-✅ Complete
+
+Tasks:
+
+- [ ] Connect dashboard with backend APIs
+- [ ] Remove frontend mock data
+- [ ] Fetch real user information
+- [ ] Dashboard statistics
+- [ ] Backend dashboard endpoints
+
+
+---
+
+## Milestone 6 — Projects Management ⬜
+
+
+Tasks:
+
+- [ ] Create project system
+- [ ] Project database models
+- [ ] Project CRUD APIs
+- [ ] Project dashboard UI
+- [ ] Project ownership system
+
+
+---
+
+## Milestone 7 — Deployments ⬜
+
+
+Tasks:
+
+- [ ] Deployment management
+- [ ] Deployment history
+- [ ] Container status tracking
+- [ ] Deployment logs
+- [ ] Deployment API
+
+
+---
+
+## Milestone 8 — Monitoring & Logs ⬜
+
+
+Tasks:
+
+- [ ] Application monitoring
+- [ ] Log collection system
+- [ ] Prometheus integration
+- [ ] Grafana dashboards
+- [ ] Loki logging
+- [ ] Jaeger tracing
+
+
+---
+
+## Milestone 9 — DevOps Implementation ⬜
+
+
+### Docker
+
+- [ ] Frontend Dockerfile
+- [ ] Backend Dockerfile
+- [ ] Docker Compose setup
+- [ ] Container networking
+
+
+### CI/CD
+
+- [ ] GitHub Actions pipeline
+- [ ] Automated testing
+- [ ] Docker image building
+- [ ] Image publishing
+
+
+### Kubernetes
+
+- [ ] Kubernetes manifests
+- [ ] Deployments
+- [ ] Services
+- [ ] ConfigMaps
+- [ ] Secrets
+- [ ] Ingress
+
+
+### Infrastructure as Code
+
+- [ ] Terraform configuration
+- [ ] AWS infrastructure
+- [ ] Networking
+- [ ] Compute resources
+
+
+### GitOps
+
+- [ ] Argo CD setup
+- [ ] Automated deployment workflow
+
+
+---
+
+# Current Architecture
+
+
+
+
+---
+
+# Current Status
+
 
 Completed:
-- User session persists after refresh
-- Authentication remains active after F5
+
+✅ Phase 1 Foundation  
+✅ Milestone 1 Frontend Authentication  
+✅ Milestone 2 Backend Authentication Integration  
+✅ Milestone 3 JWT Storage & Session Persistence  
+
+
+Current Task:
+
+➡️ Milestone 4 — Protected Routes & Authorization
 
 
 ---
@@ -146,42 +281,7 @@ main
 
 # Latest Commit
 
-feat(auth): complete frontend authentication
-
-Commit:
-120eee6
-
-
----
-
-# Current Architecture
-
-
-
----
-
-# Known Issues
-
-- Frontend authentication is complete but backend authentication integration is pending
-- User accounts are not yet stored through backend APIs
-- Dashboard still uses frontend data
-- JWT validation through FastAPI pending
-
-
----
-
-# Next Task
-
-Start Phase 3 — Backend Integration
-
-Tasks:
-
-- Connect Next.js frontend with FastAPI backend
-- Create database user models
-- Implement authentication API flow
-- Connect PostgreSQL user storage
-- Implement backend JWT verification
-- Replace frontend mock authentication with real backend authentication
+feat(auth): complete JWT authentication and session persistence
 
 
 ---
@@ -190,9 +290,11 @@ Tasks:
 
 - Complete one milestone at a time
 - Commit after every major feature
-- Maintain clean Git history
+- Keep Git history clean
 - Do not rewrite completed features
-- Test before moving to the next milestone
+- Test before moving forward
+- Maintain production-style architecture
+- Document every major change
 
 
 ---
@@ -202,9 +304,10 @@ Tasks:
 If another AI continues this project:
 
 1. Read this file first.
-2. Analyze the repository before making changes.
-3. Continue ONLY from the "Next Task".
-4. Do not rewrite completed work.
-5. Preserve existing architecture and technology choices.
+2. Analyze the repository before changing anything.
+3. Continue ONLY from the current milestone.
+4. Do not rebuild completed features.
+5. Preserve the existing architecture.
 6. Complete one milestone at a time.
-7. Provide git commit and push commands after completing changes.
+7. Provide commit and push commands after completing work.
+8. Explain DevOps decisions and architecture choices.

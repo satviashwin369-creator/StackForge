@@ -96,21 +96,13 @@ export function AuthForm({ mode }: AuthFormProps) {
         setLoading(false);
         return;
       }
-      // Demo fallback login when backend is offline
-      setAuthToken("demo-token-123");
-
-      useAuthStore.setState({
-        user: {
-          id: "demo-user",
-          name: full_name || "Alex Müller",
-          email: email || "demo@stackforge.io",
-          avatar: "AM",
-          role: "Developer",
-       },
-       isAuthenticated: true,
-       isLoading: false,
-      });
-      router.push("/dashboard");
+      if (err instanceof ApiClientError) {
+       setError(err.message);
+      } else if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError("Unable to login. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
