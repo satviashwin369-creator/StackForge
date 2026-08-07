@@ -4,22 +4,11 @@
 
 StackForge is a production-style Internal Developer Platform (IDP) inspired by modern DevOps platforms like Portainer, Harness, and GitLab.
 
-The goal of StackForge is to build a real-world Cloud + DevOps portfolio project demonstrating:
-
-- Full-stack application development
-- Authentication systems
-- API architecture
-- Containerization
-- CI/CD automation
-- Kubernetes orchestration
-- Infrastructure as Code
-- GitOps workflows
-- Monitoring and Observability
-
+The goal is to build a complete Cloud Native DevOps platform demonstrating modern engineering practices including authentication, APIs, containers, CI/CD, Kubernetes, infrastructure automation, monitoring, logging, and deployment workflows.
 
 ---
 
-# Technology Stack
+# Tech Stack
 
 ## Frontend
 
@@ -28,17 +17,16 @@ The goal of StackForge is to build a real-world Cloud + DevOps portfolio project
 - TypeScript
 - Tailwind CSS
 - Zustand
-
+- Axios API Client
 
 ## Backend
 
 - FastAPI
-- Python
 - SQLAlchemy
 - PostgreSQL
 - Redis
 - JWT Authentication
-
+- Alembic Database Migration
 
 ## DevOps
 
@@ -51,223 +39,198 @@ The goal of StackForge is to build a real-world Cloud + DevOps portfolio project
 - Prometheus
 - Grafana
 - Loki
-- Jaeger
-
-
-## Cloud
-
-- AWS
-
 
 ---
 
-# Development Progress
+# Current Progress
 
-
-# Phase 1 — Foundation ✅ COMPLETE
-
+## Phase 1 — Foundation ✅ COMPLETE
 
 Completed:
 
-- [x] Git repository initialized
+- [x] Git initialized
 - [x] GitHub repository created
-- [x] Project folder structure created
-- [x] Frontend environment setup
-- [x] Backend environment setup
+- [x] Project structure created
+- [x] Frontend foundation created
+- [x] Backend foundation created
+- [x] Docker environment prepared
 - [x] PostgreSQL configured
 - [x] Redis configured
-- [x] API architecture planned
-- [x] Development workflow created
+- [x] FastAPI application structure created
+- [x] Database models created
+- [x] API structure prepared
 
 
 ---
 
-# Phase 2 — Core Platform Development
+# Phase 2 — Authentication ✅ COMPLETE
 
+## Milestone 1 — Frontend Authentication
 
-## Milestone 1 — Frontend Authentication ✅ COMPLETE
-
+Status:
+✅ Complete
 
 Completed:
 
-- [x] Login page implemented
-- [x] Signup page implemented
-- [x] Authentication UI created
-- [x] Google OAuth integration
-- [x] GitHub OAuth integration
-- [x] Frontend authentication flow completed
-- [x] Dashboard redirect after authentication
+- [x] Login UI implemented
+- [x] Signup UI implemented
+- [x] Authentication forms created
+- [x] OAuth architecture prepared
+- [x] Frontend authentication flow created
 
 
 ---
 
-## Milestone 2 — Backend Authentication Integration ✅ COMPLETE
+## Milestone 2 — Backend Authentication Integration
 
+Status:
+✅ Complete
 
 Completed:
 
-- [x] FastAPI authentication APIs
-- [x] Backend authentication flow
-- [x] Database user model
-- [x] PostgreSQL user storage
-- [x] Frontend and backend communication
-- [x] Authentication API integration
+- [x] User database model created
+- [x] Registration API implemented
+- [x] Login API implemented
+- [x] Password hashing implemented
+- [x] JWT token generation implemented
+- [x] PostgreSQL user storage connected
+- [x] `/me` user validation endpoint implemented
 
 
 ---
 
-## Milestone 3 — JWT Storage & Session Persistence ✅ COMPLETE
+## Milestone 3 — JWT Storage & Session Persistence
 
+Status:
+✅ Complete
 
 Completed:
 
-- [x] JWT token generation
-- [x] JWT token handling
-- [x] Zustand authentication store
-- [x] Token persistence
-- [x] Session restoration after refresh
-- [x] Authentication state management
+- [x] JWT token storage implemented
+- [x] Zustand authentication store created
+- [x] Auth state management implemented
+- [x] Session hydration implemented
+- [x] Refresh persistence verified
+- [x] Automatic token validation implemented
 
 
 ---
 
-## Milestone 4 — Protected Routes & Authorization ⬜ NEXT
+## Milestone 4 — Protected Routes & Authorization
 
+Status:
+✅ Complete
 
-Tasks:
+Completed:
 
-- [ ] Backend JWT verification middleware
-- [ ] Protected API endpoints
-- [ ] Frontend route guards
-- [ ] Authorization logic
-- [ ] User permission handling
+### Backend
+
+- [x] JWT dependency created
+- [x] Bearer token validation implemented
+- [x] Current user extraction implemented
+- [x] Protected dashboard APIs
+
+Protected APIs:
+
+- `/dashboard/kpis`
+- `/dashboard/activities`
+- `/dashboard/pipeline`
+
+### Frontend
+
+- [x] ProtectedRoute component created
+- [x] Dashboard route protection added
+- [x] Unauthenticated users redirected to login
+- [x] Authenticated users can access dashboard
+- [x] Session persistence tested after refresh
 
 
 ---
 
-## Milestone 5 — Dashboard API Integration ⬜
+# Phase 3 — Platform Features
 
+## Milestone 5 — Dashboard API Integration
+
+Status:
+🟡 In Progress
 
 Tasks:
 
-- [ ] Connect dashboard with backend APIs
-- [ ] Remove frontend mock data
-- [ ] Fetch real user information
-- [ ] Dashboard statistics
-- [ ] Backend dashboard endpoints
+- [x] Dashboard API service layer created
+- [x] FastAPI dashboard endpoints created
+- [x] Frontend API communication implemented
+- [x] Live dashboard data loading
+- [x] Authentication headers attached
+
+Remaining:
+
+- [ ] Remove remaining mock fallback data
+- [ ] Improve error handling
+- [ ] Add loading states
+- [ ] Finalize dashboard data models
 
 
 ---
 
-## Milestone 6 — Projects Management ⬜
+## Milestone 6 — Projects Management
 
+Status:
+⬜ Pending
 
 Tasks:
 
-- [ ] Create project system
-- [ ] Project database models
+- [ ] Project database model
 - [ ] Project CRUD APIs
-- [ ] Project dashboard UI
-- [ ] Project ownership system
+- [ ] Frontend project management UI
+- [ ] Project deployment linking
 
 
 ---
 
-## Milestone 7 — Deployments ⬜
+## Milestone 7 — Deployments
 
+Status:
+⬜ Pending
 
 Tasks:
 
-- [ ] Deployment management
+- [ ] Deployment workflow
+- [ ] CI/CD integration
 - [ ] Deployment history
-- [ ] Container status tracking
-- [ ] Deployment logs
-- [ ] Deployment API
+- [ ] Pipeline execution tracking
 
 
 ---
 
-## Milestone 8 — Monitoring & Logs ⬜
+## Milestone 8 — Monitoring & Logs
 
+Status:
+⬜ Pending
 
 Tasks:
 
-- [ ] Application monitoring
-- [ ] Log collection system
-- [ ] Prometheus integration
+- [ ] Prometheus metrics
 - [ ] Grafana dashboards
 - [ ] Loki logging
-- [ ] Jaeger tracing
+- [ ] Log streaming
+- [ ] System monitoring
 
 
 ---
 
-## Milestone 9 — DevOps Implementation ⬜
+## Milestone 9 — DevOps Infrastructure
 
+Status:
+⬜ Pending
 
-### Docker
+Tasks:
 
-- [ ] Frontend Dockerfile
-- [ ] Backend Dockerfile
-- [ ] Docker Compose setup
-- [ ] Container networking
-
-
-### CI/CD
-
-- [ ] GitHub Actions pipeline
-- [ ] Automated testing
-- [ ] Docker image building
-- [ ] Image publishing
-
-
-### Kubernetes
-
+- [ ] Docker production setup
 - [ ] Kubernetes manifests
-- [ ] Deployments
-- [ ] Services
-- [ ] ConfigMaps
-- [ ] Secrets
-- [ ] Ingress
-
-
-### Infrastructure as Code
-
-- [ ] Terraform configuration
-- [ ] AWS infrastructure
-- [ ] Networking
-- [ ] Compute resources
-
-
-### GitOps
-
-- [ ] Argo CD setup
-- [ ] Automated deployment workflow
-
-
----
-
-# Current Architecture
-
-
-
-
----
-
-# Current Status
-
-
-Completed:
-
-✅ Phase 1 Foundation  
-✅ Milestone 1 Frontend Authentication  
-✅ Milestone 2 Backend Authentication Integration  
-✅ Milestone 3 JWT Storage & Session Persistence  
-
-
-Current Task:
-
-➡️ Milestone 4 — Protected Routes & Authorization
+- [ ] Terraform infrastructure
+- [ ] AWS deployment
+- [ ] GitHub Actions CI/CD
+- [ ] Argo CD GitOps workflow
 
 
 ---
@@ -279,9 +242,39 @@ main
 
 ---
 
-# Latest Commit
+# Latest Completed Feature
 
-feat(auth): complete JWT authentication and session persistence
+feat(auth): add protected dashboard routes
+
+
+---
+
+# Current Architecture
+
+
+
+---
+
+# Known Issues
+
+- Dashboard still contains some mock fallback data
+- OAuth providers are prepared but production credentials are pending
+- Metrics endpoints need final authorization decision
+- Cloud deployment not started
+
+
+---
+
+# Next Task
+
+## Milestone 5 — Dashboard API Integration
+
+Focus:
+
+- Replace mock dashboard data
+- Connect all dashboard components with real backend responses
+- Improve API error handling
+- Prepare dashboard for production usage
 
 
 ---
@@ -290,11 +283,10 @@ feat(auth): complete JWT authentication and session persistence
 
 - Complete one milestone at a time
 - Commit after every major feature
-- Keep Git history clean
-- Do not rewrite completed features
+- Maintain clean Git history
 - Test before moving forward
-- Maintain production-style architecture
-- Document every major change
+- Do not rewrite completed architecture
+- Preserve existing technology choices
 
 
 ---
@@ -304,10 +296,9 @@ feat(auth): complete JWT authentication and session persistence
 If another AI continues this project:
 
 1. Read this file first.
-2. Analyze the repository before changing anything.
-3. Continue ONLY from the current milestone.
-4. Do not rebuild completed features.
-5. Preserve the existing architecture.
+2. Analyze the repository before making changes.
+3. Continue only from the current milestone.
+4. Do not rewrite completed features.
+5. Preserve existing architecture.
 6. Complete one milestone at a time.
-7. Provide commit and push commands after completing work.
-8. Explain DevOps decisions and architecture choices.
+7. Provide git commit and push commands after completing changes.
