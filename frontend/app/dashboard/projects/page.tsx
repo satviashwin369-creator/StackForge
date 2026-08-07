@@ -11,7 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAsyncData } from "@/hooks/use-async-data";
 import { projectsService } from "@/lib/api/services";
-import { projects as mockProjects } from "@/lib/mock-data";
+
 import type { Project } from "@/lib/types/models";
 
 export default function ProjectsPage() {
@@ -20,8 +20,7 @@ export default function ProjectsPage() {
 
   const { data: projects, loading, refetch } = useAsyncData(
     () => projectsService.getAll().then((r) => r.data),
-    [],
-    mockProjects
+    []
   );
 
   const filtered = useMemo(() => {

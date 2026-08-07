@@ -12,34 +12,26 @@ import { ChartSkeleton, ProjectGridSkeleton } from "@/components/dashboard/dashb
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAsyncData } from "@/hooks/use-async-data";
 import { infrastructureService } from "@/lib/api/services";
-import {
-  servers as mockServers,
-  cpuTimeSeriesData,
-  memoryTimeSeriesData,
-} from "@/lib/mock-data";
+
 
 export default function InfrastructurePage() {
   const servers = useAsyncData(
     () => infrastructureService.getServers().then((r) => r.data),
-    [],
-    mockServers
+    []
   );
   const cpu = useAsyncData(
     () => infrastructureService.getCpuSeries().then((r) => r.data),
-    [],
-    cpuTimeSeriesData
+    []
   );
   const memory = useAsyncData(
     () => infrastructureService.getMemorySeries().then((r) => r.data),
-    [],
-    memoryTimeSeriesData
+    []
   );
+  
   const disk = useAsyncData(
     () => infrastructureService.getDiskSeries().then((r) => r.data),
-    [],
-    memoryTimeSeriesData
+    []
   );
-
   const healthyCount =
     servers.data?.filter((s) => s.status === "healthy").length ?? 0;
   const alertCount =

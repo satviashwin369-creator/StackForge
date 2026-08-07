@@ -9,42 +9,30 @@ import { DeploymentsTable } from "@/components/dashboard/deployments-table";
 import { ChartSkeleton, TableSkeleton } from "@/components/dashboard/dashboard-skeletons";
 import { useAsyncData } from "@/hooks/use-async-data";
 import { dashboardService, deploymentsService } from "@/lib/api/services";
-import {
-  kpiStats,
-  cpuTimeSeriesData,
-  deploymentSuccessData,
-  activities as mockActivities,
-  deployments as mockDeployments,
-} from "@/lib/mock-data";
+
 
 export default function DashboardOverviewPage() {
   // Each call uses mock data as an immediate fallback — no blank flicker,
   // no error screen when backend is offline. Live data replaces it silently.
   const kpis = useAsyncData(
     () => dashboardService.getKpis().then((r) => r.data),
-    [],
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    kpiStats as any
+    []
   );
   const cpu = useAsyncData(
     () => dashboardService.getCpuSeries().then((r) => r.data),
-    [],
-    cpuTimeSeriesData
+    []
   );
   const deployChart = useAsyncData(
     () => dashboardService.getDeploymentSuccessSeries().then((r) => r.data),
-    [],
-    deploymentSuccessData
+    []
   );
   const activities = useAsyncData(
     () => dashboardService.getActivities().then((r) => r.data),
-    [],
-    mockActivities
+    []
   );
   const deployments = useAsyncData(
     () => deploymentsService.getAll().then((r) => r.data),
-    [],
-    mockDeployments
+    []
   );
 
   return (

@@ -8,29 +8,22 @@ import { DeploymentLogsPreview } from "@/components/dashboard/deployment-logs-pr
 import { ChartSkeleton, TableSkeleton } from "@/components/dashboard/dashboard-skeletons";
 import { useAsyncData } from "@/hooks/use-async-data";
 import { deploymentsService } from "@/lib/api/services";
-import {
-  pipelineStages as mockPipeline,
-  deployments as mockDeployments,
-  logEntries as mockLogs,
-} from "@/lib/mock-data";
+
 
 export default function DeploymentsPage() {
   const pipeline = useAsyncData(
     () => deploymentsService.getPipeline().then((r) => r.data),
-    [],
-    mockPipeline
+    []
   );
 
   const deployments = useAsyncData(
     () => deploymentsService.getAll().then((r) => r.data),
-    [],
-    mockDeployments
+    []
   );
 
   const logs = useAsyncData(
     () => deploymentsService.getRecentLogs().then((r) => r.data),
-    [],
-    mockLogs
+    []
   );
 
   return (
