@@ -12,6 +12,7 @@ import { ChartSkeleton, ProjectGridSkeleton } from "@/components/dashboard/dashb
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAsyncData } from "@/hooks/use-async-data";
 import { infrastructureService } from "@/lib/api/services";
+import { ErrorState } from "@/components/dashboard/error-state";
 
 
 export default function InfrastructurePage() {
@@ -67,17 +68,38 @@ export default function InfrastructurePage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {!cpu.data ? (
+        {cpu.error ? (
+          <ErrorState
+            title="Unable to load CPU data"
+            message={cpu.error}
+            onRetry={cpu.refetch}
+            className="h-full"
+          />
+        ) : !cpu.data ? (
           <ChartSkeleton tall />
         ) : (
           <CpuUsageChart data={cpu.data} title="Cluster CPU (24h)" />
         )}
-        {!memory.data ? (
+        {memory.error ? (
+          <ErrorState
+            title="Unable to load memory data"
+            message={memory.error}
+            onRetry={memory.refetch}
+            className="h-full"
+          />
+        ) : !memory.data ? (
           <ChartSkeleton tall />
         ) : (
           <MemoryUsageChart data={memory.data} />
         )}
-        {!disk.data ? (
+        {disk.error ? (
+          <ErrorState
+            title="Unable to load disk data"
+            message={disk.error}
+            onRetry={disk.refetch}
+            className="h-full"
+          />
+        ) : !disk.data ? (
           <ChartSkeleton tall />
         ) : (
           <DiskUsageChart data={disk.data} />
@@ -89,6 +111,21 @@ export default function InfrastructurePage() {
           Server health
         </h2>
         {!servers.data ? (
+          <ProjectGridSkeleton />
+        ) : (
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {servers.data.map((server, i) => (
+              <ServerHealthCard key={server.id} server={server} index={i} />
+            ))}
+          </div>
+        )}
+        {servers.error ? (
+          <ErrorState
+            title="Unable to load server health"
+            message={servers.error}
+            onRetry={servers.refetch}
+          />
+        ) : !servers.data ? (
           <ProjectGridSkeleton />
         ) : (
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">

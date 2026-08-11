@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAsyncData } from "@/hooks/use-async-data";
 import { projectsService } from "@/lib/api/services";
+import { ErrorState } from "@/components/dashboard/error-state";
 
 import type { Project } from "@/lib/types/models";
 
@@ -18,7 +19,12 @@ export default function ProjectsPage() {
   const [query, setQuery] = useState("");
   const [filter, setFilter] = useState<Project["status"] | "all">("all");
 
-  const { data: projects, loading, refetch } = useAsyncData(
+  const {
+    data: projects,
+    loading,
+    error,
+    refetch,
+  } = useAsyncData(
     () => projectsService.getAll().then((r) => r.data),
     []
   );
@@ -82,7 +88,13 @@ export default function ProjectsPage() {
 
       {!projects && loading && <ProjectGridSkeleton />}
 
-      {projects && filtered.length === 0 && (
+      {error ? (
+        <ErrorState
+          title="Unable to load projects"
+          message={error}
+          onRetry={refetch}
+        />
+      ) : projects && filtered.length === 0 ? (
         <EmptyState
           icon={FolderKanban}
           title="No projects found"
@@ -93,7 +105,7 @@ export default function ProjectsPage() {
             setFilter("all");
           }}
         />
-      )}
+      ) : null}
 
       {projects && filtered.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
