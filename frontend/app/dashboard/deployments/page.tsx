@@ -8,6 +8,7 @@ import { DeploymentLogsPreview } from "@/components/dashboard/deployment-logs-pr
 import { ChartSkeleton, TableSkeleton } from "@/components/dashboard/dashboard-skeletons";
 import { useAsyncData } from "@/hooks/use-async-data";
 import { deploymentsService } from "@/lib/api/services";
+import { ErrorState } from "@/components/dashboard/error-state";
 
 
 export default function DeploymentsPage() {
@@ -31,20 +32,40 @@ export default function DeploymentsPage() {
       title="Deployments"
       description="CI/CD pipelines and deployment history"
     >
-      {!pipeline.data ? (
+      {pipeline.error ? (
+        <ErrorState
+          title="Unable to load deployment pipeline"
+          message={pipeline.error}
+          onRetry={pipeline.refetch}
+        />
+      ) : !pipeline.data ? (
         <ChartSkeleton tall />
       ) : (
         <PipelineFlow stages={pipeline.data} />
       )}
 
-      {!logs.data ? (
+      {logs.error ? (
+        <ErrorState
+          title="Unable to load deployment logs"
+          message={logs.error}
+          onRetry={logs.refetch}
+        />
+      ) : !logs.data ? (
         <ChartSkeleton />
       ) : (
         <DeploymentLogsPreview logs={logs.data} />
-      )}
+     )}
 
       <div className="grid gap-4 xl:grid-cols-2">
-        {!deployments.data ? (
+        
+        {deployments.error ? (
+          <ErrorState
+            title="Unable to load deployments"
+            message={deployments.error}
+            onRetry={deployments.refetch}
+            className="h-full"
+          />
+        ) : !deployments.data ? (
           <>
             <ChartSkeleton tall />
             <TableSkeleton />
@@ -55,6 +76,7 @@ export default function DeploymentsPage() {
             <DeploymentsTable deployments={deployments.data} />
           </>
         )}
+
       </div>
     </DashboardLayout>
   );
