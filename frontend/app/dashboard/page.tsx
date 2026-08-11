@@ -6,7 +6,11 @@ import { StatCard } from "@/components/dashboard/stat-card";
 import { CpuUsageChart, DeploymentSuccessChart } from "@/components/dashboard/charts";
 import { ActivityFeed } from "@/components/dashboard/activity-feed";
 import { DeploymentsTable } from "@/components/dashboard/deployments-table";
-import { ChartSkeleton, TableSkeleton } from "@/components/dashboard/dashboard-skeletons";
+import {
+  ChartSkeleton,
+  KpiSkeletonGrid,
+  TableSkeleton,
+} from "@/components/dashboard/dashboard-skeletons";
 import { ErrorState } from "@/components/dashboard/error-state";
 import { useAsyncData } from "@/hooks/use-async-data";
 import { dashboardService, deploymentsService } from "@/lib/api/services";
@@ -43,13 +47,15 @@ export default function DashboardOverviewPage() {
     >
       {/* KPI stat cards — always visible (mock data shown instantly) */}
       {kpis.error ? (
-       <div className="col-span-full">
-         <ErrorState
-           title="Unable to load dashboard statistics"
-           message={kpis.error}
-           onRetry={kpis.refetch}
-         />
-       </div>
+        <div className="col-span-full">
+          <ErrorState
+            title="Unable to load dashboard statistics"
+            message={kpis.error}
+            onRetry={kpis.refetch}
+          />
+        </div>
+      ) : kpis.loading ? (
+        <KpiSkeletonGrid />
       ) : kpis.data ? (
         <>
           <StatCard
@@ -83,13 +89,13 @@ export default function DashboardOverviewPage() {
             title="Failed builds"
             value={String(
               (kpis.data as any).failedBuilds ??
-              (kpis.data as any).failureRate ??
-              "—"
-           )}
+                (kpis.data as any).failureRate ??
+                "—"
+            )}
             trend={
-             (kpis.data as any).failedBuildsTrend ??
-             (kpis.data as any).failureRateTrend ??
-             0
+              (kpis.data as any).failedBuildsTrend ??
+              (kpis.data as any).failureRateTrend ??
+              0
             }
             trendLabel="vs yesterday"
             icon={AlertTriangle}
@@ -107,10 +113,10 @@ export default function DashboardOverviewPage() {
             (kpis.data as any).runningServicesTrend ??
             (kpis.data as any).activeProjectsTrend ??
             0
-            }
-            trendLabel="healthy"
-            icon={Server}
-            index={3}
+          }
+          trendLabel="healthy"
+          icon={Server}
+          index={3}
           />
         </>
       ) : null}
@@ -124,6 +130,8 @@ export default function DashboardOverviewPage() {
             onRetry={cpu.refetch}
             className="h-full"
         />
+        ) : cpu.loading ? (
+          <ChartSkeleton tall />
         ) : !cpu.data ? (
           <ChartSkeleton tall />
         ) : (
@@ -136,6 +144,8 @@ export default function DashboardOverviewPage() {
             onRetry={deployChart.refetch}
             className="h-full"
           />
+        ) : deployChart.loading ? (
+          <ChartSkeleton tall />
         ) : !deployChart.data ? (
           <ChartSkeleton tall />
         ) : (
@@ -154,6 +164,8 @@ export default function DashboardOverviewPage() {
               onRetry={deployments.refetch}
               className="h-full"
             />
+          ) : deployments.loading ? (
+            <TableSkeleton />
           ) : !deployments.data ? (
             <TableSkeleton />
           ) : (
@@ -168,6 +180,8 @@ export default function DashboardOverviewPage() {
             onRetry={activities.refetch}
             className="h-full"
           />
+        ) : activities.loading ? (
+          <ChartSkeleton />
         ) : activities.data ? (
           <ActivityFeed activities={activities.data} limit={6} />
         ) : (

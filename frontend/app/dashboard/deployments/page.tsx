@@ -38,6 +38,8 @@ export default function DeploymentsPage() {
           message={pipeline.error}
           onRetry={pipeline.refetch}
         />
+      ) : pipeline.loading ? (
+        <ChartSkeleton tall />
       ) : !pipeline.data ? (
         <ChartSkeleton tall />
       ) : (
@@ -65,7 +67,7 @@ export default function DeploymentsPage() {
             onRetry={deployments.refetch}
             className="h-full"
           />
-        ) : !deployments.data ? (
+        ) : deployments.loading || !deployments.data ? (
           <>
             <ChartSkeleton tall />
             <TableSkeleton />
