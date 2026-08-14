@@ -33,14 +33,19 @@ def _display_status(project: Project, latest: Deployment | None) -> str:
     if project.status == ProjectStatus.INACTIVE.value:
         return "idle"
     if not latest:
-        return "running"
-    if latest.status in (DeploymentStatus.BUILDING.value, DeploymentStatus.DEPLOYING.value):
+        return "idle"
+    if latest.status in (
+        DeploymentStatus.BUILDING.value,
+        DeploymentStatus.DEPLOYING.value,
+    ):
         return "building"
     if latest.status == DeploymentStatus.FAILED.value:
         return "failed"
     if latest.status == DeploymentStatus.QUEUED.value:
         return "building"
-    return "running"
+    if latest.status == DeploymentStatus.SUCCESS.value:
+        return "running"
+    return "idle"
 
 
 def _health_score(latest: Deployment | None) -> int:

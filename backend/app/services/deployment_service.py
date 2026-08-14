@@ -136,14 +136,11 @@ class DeploymentService:
             )
             .order_by(desc(Deployment.created_at))
         )
+        
         if not dep:
-            dep = db.scalar(
-                select(Deployment)
-                .join(Project)
-                .where(Project.user_id == user.id)
-                .order_by(desc(Deployment.created_at))
-            )
-        status = dep.status if dep else DeploymentStatus.SUCCESS.value
+            return []
+
+        status = dep.status
 
         def stage(name: str, icon: str, idx: int) -> PipelineStageRead:
             order = ["queued", "building", "deploying", "success"]
