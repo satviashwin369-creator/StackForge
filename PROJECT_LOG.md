@@ -60,7 +60,6 @@ Completed:
 - [x] Database models created
 - [x] API structure prepared
 
-
 ---
 
 # Phase 2 — Authentication ✅ COMPLETE
@@ -68,6 +67,7 @@ Completed:
 ## Milestone 1 — Frontend Authentication
 
 Status:
+
 ✅ Complete
 
 Completed:
@@ -78,12 +78,12 @@ Completed:
 - [x] OAuth architecture prepared
 - [x] Frontend authentication flow created
 
-
 ---
 
 ## Milestone 2 — Backend Authentication Integration
 
 Status:
+
 ✅ Complete
 
 Completed:
@@ -96,12 +96,12 @@ Completed:
 - [x] PostgreSQL user storage connected
 - [x] `/me` user validation endpoint implemented
 
-
 ---
 
 ## Milestone 3 — JWT Storage & Session Persistence
 
 Status:
+
 ✅ Complete
 
 Completed:
@@ -113,12 +113,12 @@ Completed:
 - [x] Refresh persistence verified
 - [x] Automatic token validation implemented
 
-
 ---
 
 ## Milestone 4 — Protected Routes & Authorization
 
 Status:
+
 ✅ Complete
 
 Completed:
@@ -144,7 +144,6 @@ Protected APIs:
 - [x] Authenticated users can access dashboard
 - [x] Session persistence tested after refresh
 
-
 ---
 
 # Phase 3 — Platform Features
@@ -152,60 +151,105 @@ Protected APIs:
 ## Milestone 5 — Dashboard API Integration
 
 Status:
-🟡 In Progress
 
-Tasks:
+✅ Complete
+
+Completed:
 
 - [x] Dashboard API service layer created
 - [x] FastAPI dashboard endpoints created
 - [x] Frontend API communication implemented
 - [x] Live dashboard data loading
 - [x] Authentication headers attached
-
-Remaining:
-
-- [ ] Remove remaining mock fallback data
-- [ ] Improve error handling
-- [ ] Add loading states
-- [ ] Finalize dashboard data models
-
+- [x] Mock fallback data removed
+- [x] Dashboard error handling implemented
+- [x] Dashboard loading states implemented
+- [x] Dashboard data models finalized
 
 ---
 
 ## Milestone 6 — Projects Management
 
 Status:
-⬜ Pending
 
-Tasks:
+✅ Complete
 
-- [ ] Project database model
-- [ ] Project CRUD APIs
-- [ ] Frontend project management UI
-- [ ] Project deployment linking
+Completed:
 
+- [x] Project database model
+- [x] Project CRUD APIs
+- [x] Frontend project management UI
+- [x] Project creation
+- [x] Project editing
+- [x] Project deletion
+- [x] Project detail page
+- [x] Project deployment linking
+- [x] Project status display
+- [x] Project health score display
+- [x] Project stack information display
+- [x] Deployment information connected to projects
 
 ---
 
 ## Milestone 7 — Deployments
 
 Status:
-⬜ Pending
 
-Tasks:
+✅ Complete
 
-- [ ] Deployment workflow
-- [ ] CI/CD integration
-- [ ] Deployment history
-- [ ] Pipeline execution tracking
+Completed:
 
+- [x] Deployment database model
+- [x] Deployment creation API
+- [x] Deployment workflow
+- [x] Deployment triggering from project page
+- [x] Deployment status tracking
+- [x] Deployment history
+- [x] Project-to-deployment relationship
+- [x] Deployment persistence in PostgreSQL
+- [x] Deployment timeline
+- [x] Deployment duration tracking
+- [x] Deployment completion tracking
+- [x] Active pipeline API
+- [x] Pipeline execution tracking
+- [x] Pipeline frontend service integration
+- [x] Pipeline visualization
+- [x] Source stage
+- [x] Build stage
+- [x] Test stage
+- [x] Security Scan stage
+- [x] Deploy stage
+- [x] Verify stage
+- [x] Successful pipeline visualization
+- [x] Pipeline persistence across page refresh
+- [x] Deployment/project data verified against PostgreSQL
+
+### Deployment Verification
+
+Verified deployment records in PostgreSQL including:
+
+- Deployment ID
+- Project relationship
+- Deployment status
+- Creation timestamp
+- Completion timestamp
+- Duration
+
+Latest verified deployments completed successfully.
+
+Pipeline UI was verified to display:
+
+`Source → Build → Test → Security Scan → Deploy → Verify`
+
+The pipeline remains visible after refreshing the project page.
 
 ---
 
 ## Milestone 8 — Monitoring & Logs
 
 Status:
-⬜ Pending
+
+⏳ Pending
 
 Tasks:
 
@@ -214,14 +258,18 @@ Tasks:
 - [ ] Loki logging
 - [ ] Log streaming
 - [ ] System monitoring
-
+- [ ] Deployment monitoring
+- [ ] Application health metrics
+- [ ] Monitoring integration with dashboard
+- [ ] Production-style observability verification
 
 ---
 
 ## Milestone 9 — DevOps Infrastructure
 
 Status:
-⬜ Pending
+
+⏳ Pending
 
 Tasks:
 
@@ -232,65 +280,99 @@ Tasks:
 - [ ] GitHub Actions CI/CD
 - [ ] Argo CD GitOps workflow
 
-
 ---
 
 # Current Branch
 
 main
 
-
 ---
 
 # Latest Completed Feature
 
-feat(auth): add protected dashboard routes
-
+feat(deployments): complete deployment workflow and pipeline tracking
 
 ---
 
 # Current Architecture
 
+## Frontend
 
+Next.js application providing:
+
+- Authentication
+- Protected dashboard
+- Project management
+- Project details
+- Deployment triggering
+- Deployment history
+- Pipeline visualization
+- Logs preview
+- Dashboard analytics
+
+## Backend
+
+FastAPI application providing:
+
+- Authentication
+- JWT authorization
+- Dashboard APIs
+- Project CRUD APIs
+- Deployment APIs
+- Pipeline APIs
+- PostgreSQL persistence
+- Redis integration
+
+## Database
+
+PostgreSQL stores:
+
+- Users
+- Projects
+- Deployments
+
+Projects are linked to deployments through the project relationship.
+
+## Containers
+
+Current Docker Compose services:
+
+- frontend
+- backend
+- db
+- redis
+- worker
+
+Backend, frontend, PostgreSQL, and Redis have been verified as healthy.
 
 ---
 
 # Known Issues
 
-- Dashboard still contains some mock fallback data
 - OAuth providers are prepared but production credentials are pending
 - Metrics endpoints need final authorization decision
+- Worker container health check is currently unhealthy and needs investigation
 - Cloud deployment not started
-
+- Kubernetes deployment not started
+- Terraform infrastructure not started
+- Production CI/CD pipeline not finalized
 
 ---
 
 # Next Task
 
-## Milestone 5 — Dashboard API Integration
+## Milestone 8 — Monitoring & Logs
 
 Focus:
 
-- Replace mock dashboard data
-- Connect all dashboard components with real backend responses
-- Improve API error handling
-- Prepare dashboard for production usage
-
-Milestone 5 — Dashboard API Integration
-
-Completed:
-✅ Dashboard API service layer
-✅ FastAPI dashboard endpoints
-✅ Frontend API communication
-✅ Live dashboard data loading
-✅ Authentication headers
-✅ Removed mock fallback data
-
-Remaining:
-⬜ Improve error handling
-⬜ Add loading states
-⬜ Finalize dashboard data models
-
+- Implement Prometheus metrics
+- Add Grafana monitoring dashboards
+- Implement Loki logging
+- Add deployment and system log streaming
+- Connect monitoring data to the dashboard
+- Add application health monitoring
+- Add deployment monitoring
+- Verify production-style observability
 
 ---
 
@@ -302,7 +384,7 @@ Remaining:
 - Test before moving forward
 - Do not rewrite completed architecture
 - Preserve existing technology choices
-
+- Verify backend/database/frontend integration before marking a milestone complete
 
 ---
 
@@ -316,4 +398,23 @@ If another AI continues this project:
 4. Do not rewrite completed features.
 5. Preserve existing architecture.
 6. Complete one milestone at a time.
-7. Provide git commit and push commands after completing changes.
+7. Verify changes through the running Docker Compose environment.
+8. Verify database-backed features with PostgreSQL when applicable.
+9. Provide git commit and push commands after completing changes.
+
+---
+
+# Milestone Status Summary
+
+| Phase | Milestone | Status |
+|---|---|---|
+| Phase 1 — Foundation | Foundation | ✅ Complete |
+| Phase 2 — Authentication | Milestone 1 — Frontend Authentication | ✅ Complete |
+| Phase 2 — Authentication | Milestone 2 — Backend Authentication Integration | ✅ Complete |
+| Phase 2 — Authentication | Milestone 3 — JWT Storage & Session Persistence | ✅ Complete |
+| Phase 2 — Authentication | Milestone 4 — Protected Routes & Authorization | ✅ Complete |
+| Phase 3 — Platform Features | Milestone 5 — Dashboard API Integration | ✅ Complete |
+| Phase 3 — Platform Features | Milestone 6 — Projects Management | ✅ Complete |
+| Phase 3 — Platform Features | Milestone 7 — Deployments | ✅ Complete |
+| Phase 3 — Platform Features | Milestone 8 — Monitoring & Logs | ⏳ Pending |
+| Phase 3 — Platform Features | Milestone 9 — DevOps Infrastructure | ⏳ Pending |
