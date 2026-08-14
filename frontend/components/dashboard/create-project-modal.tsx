@@ -70,7 +70,7 @@ export function CreateProjectModal({ onCreated }: CreateProjectModalProps) {
 
   const [error, setError] = useState<string | null>(null);
 
-  const [framework, setFramework] = useState("nextjs");
+  const [framework, setFramework] = useState("Next.js");
 
 
 
@@ -217,15 +217,15 @@ export function CreateProjectModal({ onCreated }: CreateProjectModalProps) {
 
               <SelectContent>
 
-                <SelectItem value="nextjs">Next.js</SelectItem>
+                <SelectItem value="Next.js">Next.js</SelectItem>
 
-                <SelectItem value="node">Node.js</SelectItem>
+                <SelectItem value="Node.js">Node.js</SelectItem>
 
-                <SelectItem value="go">Go</SelectItem>
+                <SelectItem value="Go">Go</SelectItem>
 
-                <SelectItem value="python">Python</SelectItem>
+                <SelectItem value="Python">Python</SelectItem>
 
-                <SelectItem value="rust">Rust</SelectItem>
+                <SelectItem value="Rust">Rust</SelectItem>
 
               </SelectContent>
 

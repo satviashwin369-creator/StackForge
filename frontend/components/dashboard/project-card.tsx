@@ -4,7 +4,13 @@
 
 import { motion } from "framer-motion";
 
-import { ExternalLink, GitBranch, MoreHorizontal, Trash2 } from "lucide-react";
+import {
+  ExternalLink,
+  GitBranch,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react";
 
 import Link from "next/link";
 
@@ -17,6 +23,20 @@ import { projectsService } from "@/lib/api/services";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 import { buttonVariants } from "@/components/ui/button";
+
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 import {
 
@@ -80,8 +100,42 @@ export function ProjectCard({
 
   const [deleting, setDeleting] = useState(false);
 
+  const [editing, setEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [editError, setEditError] = useState<string | null>(null);
 
+  const [editName, setEditName] = useState(project.name);
+  const [editDescription, setEditDescription] = useState(project.description);
+  const [editFramework, setEditFramework] = useState(project.framework);
+  const [editRepo, setEditRepo] = useState(project.repo);
+  const [editBranch, setEditBranch] = useState(project.branch);
 
+  async function handleUpdate(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    setEditError(null);
+    setSaving(true);
+
+    try {
+      await projectsService.update(project.id, {
+        name: editName.trim(),
+        description: editDescription.trim(),
+        framework: editFramework,
+        repo: editRepo.trim(),
+        branch: editBranch.trim(),
+      });
+
+      setEditing(false);
+      onDeleted?.();
+    } catch (err) {
+      setEditError(
+        err instanceof Error ? err.message : "Failed to update project"
+      );
+    } finally {
+      setSaving(false);
+    }
+  }
+  
   async function handleDelete() {
 
     if (!confirm(`Delete project "${project.name}"?`)) return;
@@ -167,19 +221,19 @@ export function ProjectCard({
               <DropdownMenuGroup>
 
                 <DropdownMenuItem render={<Link href={detailHref} />}>
-
                   View details
+                </DropdownMenuItem>
 
+                <DropdownMenuItem onClick={() => setEditing(true)}>
+                  <Pencil className="size-4" />
+                  Edit project
                 </DropdownMenuItem>
 
                 <DropdownMenuItem
-
                   render={<Link href="/dashboard/deployments" />}
-
                 >
 
                   View deployments
-
                 </DropdownMenuItem>
 
                 <DropdownMenuItem render={<Link href="/dashboard/logs" />}>
@@ -330,7 +384,100 @@ export function ProjectCard({
 
         </CardContent>
 
-      </Card>
+      </Card> 
+
+      <Dialog open={editing} onOpenChange={setEditing}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Edit project</DialogTitle>
+            <DialogDescription>
+              Update your project configuration.
+            </DialogDescription>
+          </DialogHeader>
+
+          <form className="space-y-4" onSubmit={handleUpdate}>
+            {editError && (
+              <p className="text-xs text-destructive">{editError}</p>
+            )}
+
+            <div className="space-y-2">
+              <Label htmlFor={`edit-name-${project.id}`}>Project name</Label>
+              <Input
+                id={`edit-name-${project.id}`}
+                value={editName}
+                onChange={(e) => setEditName(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor={`edit-repo-${project.id}`}>
+                Repository URL
+              </Label>
+              <Input
+                id={`edit-repo-${project.id}`}
+                value={editRepo}
+                onChange={(e) => setEditRepo(e.target.value)}
+                className="font-mono text-xs"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Framework</Label>
+
+              <select
+                value={editFramework}
+                onChange={(e) => setEditFramework(e.target.value)}
+                className="flex h-9 w-full rounded-md border border-input bg-background px-3 py-1 text-sm"
+              >
+                <option value="Next.js">Next.js</option>
+                <option value="Node.js">Node.js</option>
+                <option value="Go">Go</option>
+                <option value="Python">Python</option>
+                <option value="Rust">Rust</option>
+              </select>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor={`edit-branch-${project.id}`}>Branch</Label>
+              <Input
+                id={`edit-branch-${project.id}`}
+                value={editBranch}
+                onChange={(e) => setEditBranch(e.target.value)}
+                className="font-mono text-xs"
+                required
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor={`edit-description-${project.id}`}>
+                Description
+              </Label>
+              <Textarea
+                id={`edit-description-${project.id}`}
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                rows={3}
+              />
+            </div>
+
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setEditing(false)}
+              >
+                Cancel
+              </Button>
+
+              <Button type="submit" disabled={saving}>
+                {saving ? "Saving…" : "Save changes"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
 
     </motion.div>
 

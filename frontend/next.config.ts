@@ -5,7 +5,10 @@ const backendInternal =
   process.env.BACKEND_INTERNAL_URL ?? "http://localhost:4000";
 
 const nextConfig: NextConfig = {
+  output: "standalone",
   outputFileTracingRoot: path.join(__dirname),
+
+  /** Enable persistent webpack filesystem cache ...
 
   /** Enable persistent webpack filesystem cache — dramatically faster
    *  page compilations after the first build (near-instant hot reload). */

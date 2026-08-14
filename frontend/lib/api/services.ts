@@ -86,9 +86,26 @@ export const dashboardService = {
 
 export const projectsService = {
   getAll: () => api.get<Project[]>("/projects"),
+
   getById: (id: string) => api.get<Project>(`/projects/${id}`),
-  create: (body: ProjectCreateInput) => api.post<Project>("/projects", body),
-  delete: (id: string) => api.delete<{ message: string }>(`/projects/${id}`),
+
+  create: (body: ProjectCreateInput) =>
+    api.post<Project>("/projects", body),
+
+  update: (
+    id: string,
+    body: {
+      name?: string;
+      description?: string;
+      framework?: string;
+      repo?: string;
+      branch?: string;
+      status?: string;
+    }
+  ) => api.patch<Project>(`/projects/${id}`, body),
+
+  delete: (id: string) =>
+    api.delete<{ message: string }>(`/projects/${id}`),
 };
 
 export const deploymentsService = {
