@@ -249,19 +249,160 @@ The pipeline remains visible after refreshing the project page.
 
 Status:
 
+🟡 In Progress
+
+### Prometheus
+
+Status:
+
+✅ Complete
+
+Completed:
+
+- [x] Backend `/metrics` endpoint implemented
+- [x] Prometheus metrics endpoint verified
+- [x] Prometheus service added to Docker Compose
+- [x] Prometheus configuration created
+- [x] Backend configured as Prometheus scrape target
+- [x] Prometheus persistent storage configured
+- [x] Prometheus container successfully started
+- [x] Prometheus readiness verified
+- [x] Backend metrics successfully scraped by Prometheus
+- [x] `stackforge-backend` target verified as `up`
+- [x] Prometheus scrape errors verified as empty
+
+Verified Prometheus target:
+
+`backend:8000/metrics`
+
+Scrape interval:
+
+`15s`
+
+Prometheus target health:
+
+`up`
+
+---
+
+### Grafana
+
+Status:
+
 ⏳ Pending
 
 Tasks:
 
-- [ ] Prometheus metrics
-- [ ] Grafana dashboards
-- [ ] Loki logging
-- [ ] Log streaming
-- [ ] System monitoring
-- [ ] Deployment monitoring
-- [ ] Application health metrics
-- [ ] Monitoring integration with dashboard
-- [ ] Production-style observability verification
+- [ ] Add Grafana service
+- [ ] Connect Grafana to Prometheus
+- [ ] Configure Prometheus data source
+- [ ] Create backend monitoring dashboard
+- [ ] Add CPU/memory/process metrics
+- [ ] Add request/application metrics
+- [ ] Add service health visualization
+- [ ] Verify dashboard persistence
+
+---
+
+### Loki Logging
+
+Status:
+
+⏳ Pending
+
+Tasks:
+
+- [ ] Add Loki service
+- [ ] Configure log collection
+- [ ] Connect Loki to Grafana
+- [ ] Configure structured application logs
+- [ ] Add log queries
+- [ ] Add deployment log visualization
+
+---
+
+### Log Streaming
+
+Status:
+
+⏳ Pending
+
+Tasks:
+
+- [ ] Deployment log streaming
+- [ ] Backend log streaming
+- [ ] Frontend log visibility
+- [ ] Persistent log access
+- [ ] Verify logs through monitoring stack
+
+---
+
+### System Monitoring
+
+Status:
+
+⏳ Pending
+
+Tasks:
+
+- [ ] Service health monitoring
+- [ ] Container monitoring
+- [ ] Resource monitoring
+- [ ] Backend health metrics
+- [ ] Database health monitoring
+- [ ] Redis health monitoring
+- [ ] Worker monitoring
+
+---
+
+### Deployment Monitoring
+
+Status:
+
+⏳ Pending
+
+Tasks:
+
+- [ ] Deployment success/failure metrics
+- [ ] Deployment duration metrics
+- [ ] Deployment history monitoring
+- [ ] Pipeline execution monitoring
+- [ ] Deployment status visualization
+
+---
+
+### Dashboard Monitoring Integration
+
+Status:
+
+⏳ Pending
+
+Tasks:
+
+- [ ] Connect monitoring data to StackForge dashboard
+- [ ] Display service health
+- [ ] Display deployment metrics
+- [ ] Display system metrics
+- [ ] Add monitoring overview
+
+---
+
+### Production-Style Observability Verification
+
+Status:
+
+⏳ Pending
+
+Tasks:
+
+- [ ] Verify Prometheus
+- [ ] Verify Grafana
+- [ ] Verify Loki
+- [ ] Verify log collection
+- [ ] Verify metrics collection
+- [ ] Verify dashboards
+- [ ] Verify monitoring persistence
+- [ ] Verify complete observability workflow
 
 ---
 
@@ -290,7 +431,7 @@ main
 
 # Latest Completed Feature
 
-feat(deployments): complete deployment workflow and pipeline tracking
+feat(monitoring): add Prometheus metrics collection
 
 ---
 
@@ -322,6 +463,7 @@ FastAPI application providing:
 - Pipeline APIs
 - PostgreSQL persistence
 - Redis integration
+- Prometheus metrics endpoint
 
 ## Database
 
@@ -342,16 +484,28 @@ Current Docker Compose services:
 - db
 - redis
 - worker
+- prometheus
 
-Backend, frontend, PostgreSQL, and Redis have been verified as healthy.
+Current verified service state:
+
+- Frontend — healthy
+- Backend — healthy
+- PostgreSQL — healthy
+- Redis — healthy
+- Celery worker — running
+- Prometheus — running
+
+The Celery worker does not use an HTTP healthcheck because it does not expose an HTTP server on port 8000. Its previous incorrect HTTP healthcheck was disabled.
 
 ---
 
 # Known Issues
 
 - OAuth providers are prepared but production credentials are pending
-- Metrics endpoints need final authorization decision
-- Worker container health check is currently unhealthy and needs investigation
+- Metrics authorization/security policy needs final production decision
+- Grafana monitoring dashboards not yet implemented
+- Loki logging not yet implemented
+- Log streaming not yet implemented
 - Cloud deployment not started
 - Kubernetes deployment not started
 - Terraform infrastructure not started
@@ -363,28 +517,43 @@ Backend, frontend, PostgreSQL, and Redis have been verified as healthy.
 
 ## Milestone 8 — Monitoring & Logs
 
+### Immediate Next Task
+
+Implement Grafana monitoring.
+
 Focus:
 
-- Implement Prometheus metrics
-- Add Grafana monitoring dashboards
-- Implement Loki logging
-- Add deployment and system log streaming
-- Connect monitoring data to the dashboard
-- Add application health monitoring
-- Add deployment monitoring
-- Verify production-style observability
+- Add Grafana to Docker Compose
+- Connect Grafana to Prometheus
+- Configure Prometheus as Grafana data source
+- Create initial StackForge monitoring dashboard
+- Display backend/system metrics
+- Verify dashboard functionality
+
+After Grafana:
+
+1. Implement Loki
+2. Implement log collection
+3. Implement log visualization
+4. Implement deployment/system monitoring
+5. Integrate monitoring into StackForge dashboard
+6. Perform complete observability verification
 
 ---
 
 # Development Rules
 
 - Complete one milestone at a time
+- Complete one monitoring component at a time
 - Commit after every major feature
 - Maintain clean Git history
 - Test before moving forward
 - Do not rewrite completed architecture
 - Preserve existing technology choices
 - Verify backend/database/frontend integration before marking a milestone complete
+- Verify Docker Compose services before proceeding
+- Verify monitoring components through real running containers
+- Verify database-backed features with PostgreSQL when applicable
 
 ---
 
@@ -400,7 +569,9 @@ If another AI continues this project:
 6. Complete one milestone at a time.
 7. Verify changes through the running Docker Compose environment.
 8. Verify database-backed features with PostgreSQL when applicable.
-9. Provide git commit and push commands after completing changes.
+9. Verify monitoring components through their real services and endpoints.
+10. Do not mark a component complete without verification.
+11. Provide git commit and push commands after completing changes.
 
 ---
 
@@ -416,5 +587,5 @@ If another AI continues this project:
 | Phase 3 — Platform Features | Milestone 5 — Dashboard API Integration | ✅ Complete |
 | Phase 3 — Platform Features | Milestone 6 — Projects Management | ✅ Complete |
 | Phase 3 — Platform Features | Milestone 7 — Deployments | ✅ Complete |
-| Phase 3 — Platform Features | Milestone 8 — Monitoring & Logs | ⏳ Pending |
+| Phase 3 — Platform Features | Milestone 8 — Monitoring & Logs | 🟡 In Progress |
 | Phase 3 — Platform Features | Milestone 9 — DevOps Infrastructure | ⏳ Pending |
