@@ -12,7 +12,6 @@ services:
         NEXT_PUBLIC_API_URL: /api/v1
         NEXT_PUBLIC_WS_URL: http://localhost:8000/api/v1
         BACKEND_INTERNAL_URL: http://backend:8000
-        
     container_name: stackforge-frontend
     ports:
       - "3000:3000"
@@ -65,9 +64,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: stackforge-worker
     healthcheck:
       disable: true
-    container_name: stackforge-worker
     env_file:
       - .env
     environment:
@@ -85,6 +84,70 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
+    networks:
+      - stackforge-net
+    restart: unless-stopped
+
+  loki:
+    image: grafana/loki:3.5.0
+    container_name: stackforge-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - ./monitoring/loki/loki-config.yml:/etc/loki/local-config.yaml:ro
+      - loki_data:/loki
+    command:
+      - "-config.file=/etc/loki/local-config.yaml"
+    networks:
+      - stackforge-net
+    restart: unless-stopped
+
+  alloy:
+    image: grafana/alloy:v1.10.2
+    container_name: stackforge-alloy
+    command:
+      - run
+      - /etc/alloy/config.alloy
+      - --server.http.listen-addr=0.0.0.0:12345
+    volumes:
+      - ./monitoring/alloy/config.alloy:/etc/alloy/config.alloy:ro
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      loki:
+        condition: service_started
+    networks:
+      - stackforge-net
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v3.5.0
+    container_name: stackforge-prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus_data:/prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      - stackforge-net
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:12.1.1
+    container_name: stackforge-grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
+    depends_on:
+      prometheus:
+        condition: service_started
     networks:
       - stackforge-net
     restart: unless-stopped
@@ -138,3 +201,6 @@ networks:
 volumes:
   postgres_data:
   redis_data:
+  prometheus_data:
+  grafana_data:
+  loki_data:
