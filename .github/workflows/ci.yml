@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  packages: write
+
 jobs:
   backend:
     name: Backend CI
@@ -68,8 +72,24 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set image names
+        run: |
+          echo "BACKEND_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/stackforge-backend" >> "$GITHUB_ENV"
+          echo "FRONTEND_IMAGE=ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/stackforge-frontend" >> "$GITHUB_ENV"
+
       - name: Build backend image
-        run: docker build -t stackforge-backend:ci ./backend
+        run: |
+          docker build \
+            -t "$BACKEND_IMAGE:${GITHUB_SHA}" \
+            -t "$BACKEND_IMAGE:latest" \
+            ./backend
 
       - name: Build frontend image
         run: |
@@ -77,5 +97,16 @@ jobs:
             --build-arg NEXT_PUBLIC_API_URL=/api/v1 \
             --build-arg NEXT_PUBLIC_WS_URL=http://localhost:8000/api/v1 \
             --build-arg BACKEND_INTERNAL_URL=http://backend:8000 \
-            -t stackforge-frontend:ci \
+            -t "$FRONTEND_IMAGE:${GITHUB_SHA}" \
+            -t "$FRONTEND_IMAGE:latest" \
             ./frontend
+
+      - name: Push backend image
+        run: |
+          docker push "$BACKEND_IMAGE:${GITHUB_SHA}"
+          docker push "$BACKEND_IMAGE:latest"
+
+      - name: Push frontend image
+        run: |
+          docker push "$FRONTEND_IMAGE:${GITHUB_SHA}"
+          docker push "$FRONTEND_IMAGE:latest"
