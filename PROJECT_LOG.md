@@ -611,3 +611,38 @@ If another AI continues this project:
 | Phase 3 — Platform Features | Milestone 7 — Deployments | ✅ Complete |
 | Phase 3 — Platform Features | Milestone 8 — Monitoring & Logs | ✅ Complete |
 | Phase 3 — Platform Features | Milestone 9 — DevOps Infrastructure | ⏳ Pending |
+
+---
+
+## Milestone 9 — Kubernetes Deployment
+
+### Completed
+
+- Set up a local Kubernetes cluster using Docker Desktop / kind.
+- Created the `stackforge` Kubernetes namespace.
+- Deployed PostgreSQL with a 5 GiB PersistentVolumeClaim.
+- Deployed Redis as the caching and Celery broker/result backend.
+- Deployed the StackForge FastAPI backend using the GHCR container image.
+- Added Kubernetes readiness and liveness probes for the backend.
+- Deployed the Celery worker using the StackForge backend image.
+- Deployed the Next.js frontend using the GHCR container image.
+- Exposed the frontend through a Kubernetes NodePort.
+- Verified the frontend using Kubernetes port forwarding.
+- Verified the backend `/health` endpoint from inside the Kubernetes pod.
+- Verified all application pods reached `1/1 Running`.
+- Verified the PostgreSQL PVC reached `Bound`.
+- Verified the StackForge deployment workflow successfully completed through the Kubernetes backend and worker.
+
+### Kubernetes Manifests
+
+```text
+k8s/
+├── backend/
+│   ├── backend.yaml
+│   └── worker.yaml
+├── database/
+│   └── postgres.yaml
+├── frontend/
+│   └── frontend.yaml
+└── redis/
+    └── redis.yaml

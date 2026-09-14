@@ -222,6 +222,39 @@ All containers (`frontend`, `backend`, `db`, `redis`, `worker`, `prometheus`, `g
 
 ---
 
+## ☸️ Kubernetes Deployment
+
+StackForge can also be deployed as a multi-service application on Kubernetes.
+
+### Kubernetes Architecture
+
+The Kubernetes deployment runs the core StackForge application as separate workloads:
+
+- **Frontend** — Next.js application
+- **Backend** — FastAPI application
+- **Worker** — Celery background worker
+- **PostgreSQL** — Application database with persistent storage
+- **Redis** — Cache and Celery broker/result backend
+
+The services communicate through Kubernetes `ClusterIP` services, while the frontend is exposed through a `NodePort`.
+
+### Kubernetes Manifests
+
+Kubernetes configuration is located under:
+
+```text
+k8s/
+├── backend/
+│   ├── backend.yaml
+│   └── worker.yaml
+├── database/
+│   └── postgres.yaml
+├── frontend/
+│   └── frontend.yaml
+└── redis/
+    └── redis.yaml
+
+
 ## 🔌 API Endpoint Directory
 
 ### Authentication (`/api/v1/auth`)

@@ -1,0 +1,76 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  namespace: stackforge
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: backend
+          image: ghcr.io/satviashwin369-creator/stackforge-backend:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8000
+          env:
+            - name: DATABASE_URL
+              value: postgresql+psycopg2://stackforge:stackforge_secret@db:5432/stackforge
+            - name: REDIS_URL
+              value: redis://redis:6379/0
+            - name: CELERY_BROKER_URL
+              value: redis://redis:6379/1
+            - name: CELERY_RESULT_BACKEND
+              value: redis://redis:6379/2
+            - name: BACKEND_INTERNAL_URL
+              value: http://backend:8000
+            - name: CORS_ORIGINS
+              value: http://frontend:3000,http://127.0.0.1:3000
+            - name: DEBUG
+              value: "false"
+            - name: ENVIRONMENT
+              value: production
+            - name: JWT_SECRET_KEY
+              value: change-me-to-a-long-random-secret-in-production
+            - name: PORT
+              value: "8000"
+            - name: POSTGRES_DB
+              value: stackforge
+            - name: POSTGRES_HOST
+              value: db
+            - name: POSTGRES_PASSWORD
+              value: stackforge_secret
+            - name: POSTGRES_USER
+              value: stackforge
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8000
+            initialDelaySeconds: 20
+            periodSeconds: 10
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: stackforge
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP
