@@ -2,8 +2,26 @@ discovery.docker "containers" {
   host = "unix:///var/run/docker.sock"
 }
 
+discovery.relabel "docker_compose" {
+  targets = discovery.docker.containers.targets
+
+  // Construct __path__ from the container ID to locate JSON log files
+  rule {
+    source_labels = ["__meta_docker_container_id"]
+    regex         = "(.*)"
+    target_label  = "__path__"
+    replacement   = "/var/lib/docker/containers/$1/$1-json.log"
+  }
+
+  // Extract Docker Compose service name for Loki's service_name label
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "service_name"
+  }
+}
+
 local.file_match "docker_logs" {
-  path_targets = discovery.docker.containers.targets
+  path_targets = discovery.relabel.docker_compose.output
 }
 
 loki.source.file "docker_logs" {
@@ -23,12 +41,6 @@ loki.process "docker_logs" {
   stage.labels {
     values = {
       stream = "",
-    }
-  }
-
-  stage.static_labels {
-    values = {
-      service_name = "docker",
     }
   }
 
