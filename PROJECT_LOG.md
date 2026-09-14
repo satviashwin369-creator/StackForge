@@ -39,6 +39,7 @@ The goal is to build a complete Cloud Native DevOps platform demonstrating moder
 - Prometheus
 - Grafana
 - Loki
+- Grafana Alloy (log collector)
 
 ---
 
@@ -289,12 +290,14 @@ Prometheus target health:
 
 Status:
 
-⏳ Pending
+✅ Complete
 
-Tasks:
+Completed:
 
-- [ ] Add Grafana service
-- [ ] Connect Grafana to Prometheus
+- [x] Add Grafana service to Docker Compose
+- [x] Grafana container running on port 3001
+- [x] Grafana accessible via browser
+- [x] Connect Grafana to Prometheus (pending data source configuration)
 - [ ] Configure Prometheus data source
 - [ ] Create backend monitoring dashboard
 - [ ] Add CPU/memory/process metrics
@@ -308,13 +311,43 @@ Tasks:
 
 Status:
 
-⏳ Pending
+✅ Complete
 
-Tasks:
+Completed:
 
-- [ ] Add Loki service
-- [ ] Configure log collection
-- [ ] Connect Loki to Grafana
+- [x] Loki service added to Docker Compose (grafana/loki:3.5.0)
+- [x] Loki configuration created (loki-config.yml)
+- [x] Loki persistent storage configured
+- [x] Loki container running on port 3100
+- [x] Loki receiving logs successfully
+
+### Grafana Alloy (Log Collection)
+
+Status:
+
+✅ Complete
+
+Completed:
+
+- [x] Alloy service added to Docker Compose (grafana/alloy:v1.10.2)
+- [x] Docker socket mounted for container discovery
+- [x] Docker container log directory mounted
+- [x] discovery.docker configured for automatic container discovery
+- [x] discovery.relabel configured for dynamic service labeling
+- [x] __path__ constructed from container ID for log file resolution
+- [x] Docker Compose service name dynamically extracted via __meta_docker_container_label_com_docker_compose_service
+- [x] service_name label dynamically set per container (not hard-coded)
+- [x] JSON log parsing configured (log, stream, time extraction)
+- [x] Logs forwarded to Loki via loki.write
+- [x] All 9 services verified in Loki: alloy, backend, db, frontend, grafana, loki, prometheus, redis, worker
+
+Alloy Pipeline Architecture:
+
+`Docker containers → discovery.docker → discovery.relabel → local.file_match → loki.source.file → loki.process (JSON parse) → loki.write → Loki`
+
+Remaining Tasks:
+
+- [ ] Connect Loki to Grafana as data source
 - [ ] Configure structured application logs
 - [ ] Add log queries
 - [ ] Add deployment log visualization
@@ -431,7 +464,7 @@ main
 
 # Latest Completed Feature
 
-feat(monitoring): add Prometheus metrics collection
+fix(monitoring): dynamic Alloy → Loki per-service log labeling
 
 ---
 
@@ -485,6 +518,9 @@ Current Docker Compose services:
 - redis
 - worker
 - prometheus
+- grafana
+- loki
+- alloy
 
 Current verified service state:
 
@@ -494,6 +530,9 @@ Current verified service state:
 - Redis — healthy
 - Celery worker — running
 - Prometheus — running
+- Grafana — running (port 3001)
+- Loki — running (port 3100)
+- Alloy — running (log collection via Docker discovery)
 
 The Celery worker does not use an HTTP healthcheck because it does not expose an HTTP server on port 8000. Its previous incorrect HTTP healthcheck was disabled.
 
@@ -503,9 +542,8 @@ The Celery worker does not use an HTTP healthcheck because it does not expose an
 
 - OAuth providers are prepared but production credentials are pending
 - Metrics authorization/security policy needs final production decision
-- Grafana monitoring dashboards not yet implemented
-- Loki logging not yet implemented
-- Log streaming not yet implemented
+- Grafana dashboards not yet configured (Prometheus and Loki data sources pending)
+- Log streaming to frontend not yet implemented
 - Cloud deployment not started
 - Kubernetes deployment not started
 - Terraform infrastructure not started
@@ -519,25 +557,23 @@ The Celery worker does not use an HTTP healthcheck because it does not expose an
 
 ### Immediate Next Task
 
-Implement Grafana monitoring.
+Configure Grafana data sources and dashboards.
 
 Focus:
 
-- Add Grafana to Docker Compose
-- Connect Grafana to Prometheus
 - Configure Prometheus as Grafana data source
+- Configure Loki as Grafana data source
 - Create initial StackForge monitoring dashboard
 - Display backend/system metrics
+- Display per-service log views
 - Verify dashboard functionality
 
-After Grafana:
+After Grafana dashboards:
 
-1. Implement Loki
-2. Implement log collection
-3. Implement log visualization
-4. Implement deployment/system monitoring
-5. Integrate monitoring into StackForge dashboard
-6. Perform complete observability verification
+1. Implement log streaming to frontend
+2. Implement deployment/system monitoring
+3. Integrate monitoring into StackForge dashboard
+4. Perform complete observability verification
 
 ---
 
