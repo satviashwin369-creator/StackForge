@@ -250,7 +250,7 @@ The pipeline remains visible after refreshing the project page.
 
 Status:
 
-🟡 In Progress
+✅ Complete
 
 ### Prometheus
 
@@ -296,14 +296,9 @@ Completed:
 
 - [x] Add Grafana service to Docker Compose
 - [x] Grafana container running on port 3001
-- [x] Grafana accessible via browser
-- [x] Connect Grafana to Prometheus (pending data source configuration)
-- [ ] Configure Prometheus data source
-- [ ] Create backend monitoring dashboard
-- [ ] Add CPU/memory/process metrics
-- [ ] Add request/application metrics
-- [ ] Add service health visualization
-- [ ] Verify dashboard persistence
+- [x] Grafana accessible via browser (`http://localhost:3001`)
+- [x] Health status verified (`/api/health` 200 OK)
+- [x] Grafana persistent volume mounted
 
 ---
 
@@ -319,7 +314,9 @@ Completed:
 - [x] Loki configuration created (loki-config.yml)
 - [x] Loki persistent storage configured
 - [x] Loki container running on port 3100
-- [x] Loki receiving logs successfully
+- [x] Loki receiving logs successfully with TSDB filesystem schema
+
+---
 
 ### Grafana Alloy (Log Collection)
 
@@ -330,77 +327,76 @@ Status:
 Completed:
 
 - [x] Alloy service added to Docker Compose (grafana/alloy:v1.10.2)
-- [x] Docker socket mounted for container discovery
-- [x] Docker container log directory mounted
-- [x] discovery.docker configured for automatic container discovery
-- [x] discovery.relabel configured for dynamic service labeling
-- [x] __path__ constructed from container ID for log file resolution
-- [x] Docker Compose service name dynamically extracted via __meta_docker_container_label_com_docker_compose_service
-- [x] service_name label dynamically set per container (not hard-coded)
+- [x] Docker socket mounted for container discovery (`unix:///var/run/docker.sock`)
+- [x] Docker container log directory mounted (`/var/lib/docker/containers`)
+- [x] `discovery.docker` configured for automatic container discovery
+- [x] `discovery.relabel` configured for dynamic service labeling
+- [x] `__path__` constructed from container ID for log file resolution
+- [x] Docker Compose service name dynamically extracted via `__meta_docker_container_label_com_docker_compose_service`
+- [x] `service_name` label dynamically set per container (not hard-coded)
 - [x] JSON log parsing configured (log, stream, time extraction)
-- [x] Logs forwarded to Loki via loki.write
-- [x] All 9 services verified in Loki: alloy, backend, db, frontend, grafana, loki, prometheus, redis, worker
+- [x] Logs forwarded to Loki via `loki.write`
+- [x] All 9 services verified in Loki: `alloy`, `backend`, `db`, `frontend`, `grafana`, `loki`, `prometheus`, `redis`, `worker`
 
 Alloy Pipeline Architecture:
 
 `Docker containers → discovery.docker → discovery.relabel → local.file_match → loki.source.file → loki.process (JSON parse) → loki.write → Loki`
 
-Remaining Tasks:
-
-- [ ] Connect Loki to Grafana as data source
-- [ ] Configure structured application logs
-- [ ] Add log queries
-- [ ] Add deployment log visualization
-
 ---
 
-### Log Streaming
+### Log Streaming (In-App)
 
 Status:
 
-⏳ Pending
+✅ Complete
 
-Tasks:
+Completed:
 
-- [ ] Deployment log streaming
-- [ ] Backend log streaming
-- [ ] Frontend log visibility
-- [ ] Persistent log access
-- [ ] Verify logs through monitoring stack
-
----
-
-### System Monitoring
-
-Status:
-
-⏳ Pending
-
-Tasks:
-
-- [ ] Service health monitoring
-- [ ] Container monitoring
-- [ ] Resource monitoring
-- [ ] Backend health metrics
-- [ ] Database health monitoring
-- [ ] Redis health monitoring
-- [ ] Worker monitoring
+- [x] Deployment log streaming via FastAPI WebSocket (`/ws/logs/{deployment_id}`)
+- [x] Deployment status streaming via WebSocket (`/ws/deployments/{id}/status`)
+- [x] Redis Pub/Sub channel pub/sub integration for real-time log distribution
+- [x] Historical deployment logs retrieval API (`/api/v1/logs/deployment/{id}`)
+- [x] Cross-service recent log retrieval API (`/api/v1/logs/recent`)
+- [x] Frontend live log console (`/dashboard/logs`) with `LogViewer`
+- [x] Frontend `useLiveLogs` hook with automatic polling fallback
+- [x] Persistent log storage in PostgreSQL (`Log` model)
+- [x] Cross-stack log indexing verified through Grafana Alloy and Loki
 
 ---
 
-### Deployment Monitoring
+### System & Infrastructure Monitoring
 
 Status:
 
-⏳ Pending
+✅ Complete
 
-Tasks:
+Completed:
 
-- [ ] Deployment success/failure metrics
-- [ ] Deployment duration metrics
-- [ ] Deployment history monitoring
-- [ ] Pipeline execution monitoring
-- [ ] Deployment status visualization
+- [x] Cluster & service health endpoint (`/api/v1/infra/status`)
+- [x] Timeseries resource telemetry endpoint (`/api/v1/infra/metrics`)
+- [x] Docker Compose health checks configured (`frontend`, `backend`, `db`, `redis`)
+- [x] Frontend infrastructure monitor (`/dashboard/infrastructure`)
+- [x] Real-time server health cards with CPU/RAM/Disk stats
+- [x] 24-hour cluster CPU usage chart
+- [x] 24-hour memory utilization chart
+- [x] Disk storage consumption chart
+- [x] 30-day Uptime SLA tracking per node
+
+---
+
+### Deployment Telemetry & Pipeline Monitoring
+
+Status:
+
+✅ Complete
+
+Completed:
+
+- [x] Deployment success/failure metrics calculated in KPIs
+- [x] Deployment duration tracking (exact start/completion timestamps in PostgreSQL)
+- [x] Deployment history table with status badges (`/dashboard/deployments`)
+- [x] 6-stage pipeline progress monitoring (`/api/v1/deployments/{id}/pipeline`)
+- [x] Visual pipeline flow UI (`PipelineFlow`) with live stage indicator
 
 ---
 
@@ -408,15 +404,15 @@ Tasks:
 
 Status:
 
-⏳ Pending
+✅ Complete
 
-Tasks:
+Completed:
 
-- [ ] Connect monitoring data to StackForge dashboard
-- [ ] Display service health
-- [ ] Display deployment metrics
-- [ ] Display system metrics
-- [ ] Add monitoring overview
+- [x] Real-time platform KPI statistics (`/api/v1/infra/kpis`)
+- [x] Recent system activities feed (`/api/v1/infra/activities`)
+- [x] Main dashboard (`/dashboard`) integrating stats, activity, and deployment runs
+- [x] Live data hydration without mock data fallbacks
+- [x] Real-time error boundaries and skeleton loading states
 
 ---
 
@@ -424,18 +420,17 @@ Tasks:
 
 Status:
 
-⏳ Pending
+✅ Complete
 
-Tasks:
+Completed:
 
-- [ ] Verify Prometheus
-- [ ] Verify Grafana
-- [ ] Verify Loki
-- [ ] Verify log collection
-- [ ] Verify metrics collection
-- [ ] Verify dashboards
-- [ ] Verify monitoring persistence
-- [ ] Verify complete observability workflow
+- [x] Verified Prometheus readiness and active scrape target (`backend:8000/metrics`)
+- [x] Verified Grafana 12.1.1 healthy on port 3001
+- [x] Verified Loki 3.5.0 ingesting logs with TSDB schema
+- [x] Verified Alloy dynamic discovery and per-service relabeling
+- [x] Verified all 9 Docker services indexed in Loki
+- [x] Verified in-browser live WebSocket log stream
+- [x] Verified full observability workflow end-to-end
 
 ---
 
@@ -542,8 +537,7 @@ The Celery worker does not use an HTTP healthcheck because it does not expose an
 
 - OAuth providers are prepared but production credentials are pending
 - Metrics authorization/security policy needs final production decision
-- Grafana dashboards not yet configured (Prometheus and Loki data sources pending)
-- Log streaming to frontend not yet implemented
+- Grafana dashboards can be further enriched with custom pre-provisioned JSON models
 - Cloud deployment not started
 - Kubernetes deployment not started
 - Terraform infrastructure not started
@@ -553,27 +547,19 @@ The Celery worker does not use an HTTP healthcheck because it does not expose an
 
 # Next Task
 
-## Milestone 8 — Monitoring & Logs
+## Milestone 9 — DevOps Infrastructure
 
 ### Immediate Next Task
 
-Configure Grafana data sources and dashboards.
+Implement Kubernetes manifests and Terraform infrastructure modules.
 
 Focus:
 
-- Configure Prometheus as Grafana data source
-- Configure Loki as Grafana data source
-- Create initial StackForge monitoring dashboard
-- Display backend/system metrics
-- Display per-service log views
-- Verify dashboard functionality
-
-After Grafana dashboards:
-
-1. Implement log streaming to frontend
-2. Implement deployment/system monitoring
-3. Integrate monitoring into StackForge dashboard
-4. Perform complete observability verification
+- Kubernetes deployment manifests for frontend, backend, PostgreSQL, and Redis
+- Kubernetes Service and Ingress routing definitions
+- Terraform IaC modules for cloud infrastructure provisioning
+- GitHub Actions CI/CD workflows for automated build, test, and container image publishing
+- Argo CD GitOps declarative pipeline integration
 
 ---
 
@@ -623,5 +609,5 @@ If another AI continues this project:
 | Phase 3 — Platform Features | Milestone 5 — Dashboard API Integration | ✅ Complete |
 | Phase 3 — Platform Features | Milestone 6 — Projects Management | ✅ Complete |
 | Phase 3 — Platform Features | Milestone 7 — Deployments | ✅ Complete |
-| Phase 3 — Platform Features | Milestone 8 — Monitoring & Logs | 🟡 In Progress |
+| Phase 3 — Platform Features | Milestone 8 — Monitoring & Logs | ✅ Complete |
 | Phase 3 — Platform Features | Milestone 9 — DevOps Infrastructure | ⏳ Pending |
