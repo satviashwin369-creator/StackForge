@@ -36,10 +36,36 @@ export function useLiveLogs({
     }
   }, [deploymentId]);
 
-  useEffect(() => {
+  const refetch = useCallback(() => {
     setLoading(true);
-    void fetchLogs();
+    return fetchLogs();
   }, [fetchLogs]);
+
+  useEffect(() => {
+    let ignore = false;
+    const fetcher = deploymentId
+      ? logsService.getForDeployment(deploymentId)
+      : logsService.getRecent(100);
+
+    fetcher
+      .then((res) => {
+        if (!ignore) {
+          setLogs(res.data);
+          setError(null);
+          setLoading(false);
+        }
+      })
+      .catch((e) => {
+        if (!ignore) {
+          setError(e instanceof Error ? e.message : "Failed to load logs");
+          setLoading(false);
+        }
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, [deploymentId]);
 
   useEffect(() => {
     const id = setInterval(() => void fetchLogs(), pollIntervalMs);
@@ -50,7 +76,9 @@ export function useLiveLogs({
     if (!enableWebSocket || !deploymentId) return;
 
     const token = getAuthToken();
-    const wsUrl = `${getWsBaseUrl()}/ws/logs/${deploymentId}${token ? `?token=${token}` : ""}`;
+    if (!token) return;
+
+    const wsUrl = `${getWsBaseUrl()}/ws/logs/${deploymentId}?token=${encodeURIComponent(token)}`;
     let ws: WebSocket | null = null;
 
     try {
@@ -70,7 +98,7 @@ export function useLiveLogs({
         }
       };
     } catch {
-      setLive(false);
+      /* WebSocket connection failed, fallback to polling */
     }
 
     return () => {
@@ -79,5 +107,5 @@ export function useLiveLogs({
     };
   }, [deploymentId, enableWebSocket]);
 
-  return { logs, loading, error, live, refetch: fetchLogs };
+  return { logs, loading, error, live, refetch };
 }

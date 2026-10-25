@@ -25,7 +25,11 @@ def trigger_deployment(
     if not deployment:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Project not found")
     project = db.get(Project, deployment.project_id)
-    background_tasks.add_task(run_deployment_pipeline, deployment.id)
+    try:
+        from app.celery_app import run_deployment_task
+        run_deployment_task.delay(str(deployment.id))
+    except Exception:
+        background_tasks.add_task(run_deployment_pipeline, deployment.id)
     return ApiResponse(
         data=DeploymentService._to_read(deployment, project.name if project else "unknown")
     )

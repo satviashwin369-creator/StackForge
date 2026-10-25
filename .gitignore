@@ -54,3 +54,18 @@ Thumbs.db
 .terraform/
 *.tfstate
 *.tfstate.*
+crash.log
+crash.*.log
+*.tfvars
+*.tfvars.json
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+!*.tfvars.example
+
+# ==========================
+# Kubernetes Secrets
+# ==========================
+k8s/secret.yaml
+!k8s/secret.yaml.example

@@ -27,3 +27,27 @@ variable "redis_image" {
   type        = string
   default     = "redis:7-alpine"
 }
+
+variable "postgres_user" {
+  description = "Username for PostgreSQL database"
+  type        = string
+  default     = "stackforge"
+}
+
+variable "postgres_password" {
+  description = "Password for PostgreSQL database"
+  type        = string
+  sensitive   = true
+}
+
+variable "postgres_db" {
+  description = "Database name for PostgreSQL"
+  type        = string
+  default     = "stackforge"
+}
+
+variable "jwt_secret_key" {
+  description = "Cryptographic secret key for signing backend JWT tokens"
+  type        = string
+  sensitive   = true
+}

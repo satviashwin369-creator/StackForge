@@ -1,20 +1,32 @@
+import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
+from prometheus_client import CONTENT_TYPE_LATEST, Counter, Histogram, generate_latest
 from starlette.responses import Response
 
 from app.api.router import api_router
 from app.core.config import get_settings
 from app.core.logging import get_logger, setup_logging
 from app.db.base import Base
-from app.db.session import engine, SessionLocal
+from app.db.session import SessionLocal, engine
 from app.utils.seed import seed_database
 
 settings = get_settings()
 logger = get_logger("stackforge")
+
+REQUEST_COUNT = Counter(
+    "http_requests_total",
+    "Total HTTP Requests",
+    ["method", "status_code", "endpoint"],
+)
+REQUEST_DURATION = Histogram(
+    "http_request_duration_seconds",
+    "HTTP Request Latency in seconds",
+    ["method", "endpoint"],
+)
 
 
 @asynccontextmanager
@@ -48,6 +60,28 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def prometheus_metrics_middleware(request: Request, call_next):
+    start_time = time.time()
+    status_code = 500
+    try:
+        response = await call_next(request)
+        status_code = response.status_code
+        return response
+    finally:
+        duration = time.time() - start_time
+        endpoint = request.url.path
+        REQUEST_COUNT.labels(
+            method=request.method,
+            status_code=str(status_code),
+            endpoint=endpoint,
+        ).inc()
+        REQUEST_DURATION.labels(
+            method=request.method,
+            endpoint=endpoint,
+        ).observe(duration)
 
 
 @app.exception_handler(Exception)
