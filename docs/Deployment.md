@@ -109,10 +109,19 @@ kubectl port-forward svc/frontend -n stackforge 3000:3000
 
 ## 3. Infrastructure as Code (Terraform)
 
-The `terraform/` directory contains optional Infrastructure-as-Code modules for cloud provisioning.
+The `terraform/` directory contains declarative configurations for deploying StackForge to a Kubernetes cluster using the official HashiCorp Kubernetes provider.
 
-- **Role:** Optional IaC extension demonstrating HCL modularity and AWS provider configuration.
-- **Resource Ownership:** To prevent configuration drift, raw Kubernetes manifests in `k8s/` are the authoritative deployment mechanism for clusters. Terraform should not be used to duplicate or overwrite resources already managed by `k8s/`.
+- **Role:** Demonstrates Infrastructure-as-Code modularity, input variable validation, and credential management.
+- **Resource Ownership:** To prevent configuration drift, raw Kubernetes manifests in `k8s/` remain the primary deployment mechanism for local clusters.
+- **Credential Hardening:** All sensitive parameters (`postgres_password`, `jwt_secret_key`) are declared as `sensitive = true` input variables with no hardcoded defaults.
+- **Safe Local Setup:**
+  ```bash
+  cd terraform
+  cp terraform.tfvars.example terraform.tfvars
+  # Populate local development secrets in terraform.tfvars (ignored by git)
+  # OR provide via TF_VAR_postgres_password and TF_VAR_jwt_secret_key
+  ```
+- **State Security:** Note that `sensitive = true` protects console output but does not encrypt state files. Production environments require remote encrypted backends (e.g. S3 with KMS). See `terraform/README.md` for full details.
 
 ---
 

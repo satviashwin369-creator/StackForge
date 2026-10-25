@@ -1,0 +1,27 @@
+# ==============================================================================
+# StackForge — Terraform Variables Example Configuration
+# ==============================================================================
+# Copy this file to `terraform.tfvars` for local development or set values via
+# `TF_VAR_<variable_name>` environment variables in CI/CD pipelines.
+#
+# SECURITY WARNING:
+# NEVER commit real credentials, passwords, or populated .tfvars files to Git.
+# Note that Terraform stores all variable values in plaintext in the
+# terraform.tfstate file. Restrict access to state storage accordingly.
+# ==============================================================================
+
+# Database Credentials (REQUIRED)
+postgres_user     = "stackforge"
+postgres_password = "replace-with-a-secure-database-password"
+postgres_db       = "stackforge"
+
+# JWT Authentication Secret Key (REQUIRED)
+# Generate a secure 64-character random string, e.g. via `openssl rand -hex 32`
+jwt_secret_key    = "replace-with-a-secure-random-64-character-jwt-secret-key"
+
+# Optional Overrides
+# namespace        = "stackforge"
+# backend_image    = "ghcr.io/satviashwin369-creator/stackforge-backend:latest"
+# frontend_image   = "ghcr.io/satviashwin369-creator/stackforge-frontend:latest"
+# postgres_image   = "postgres:16-alpine"
+# redis_image      = "redis:7-alpine"
