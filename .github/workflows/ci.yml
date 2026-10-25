@@ -10,7 +10,6 @@ on:
 
 permissions:
   contents: read
-  packages: write
 
 jobs:
   backend:
@@ -74,6 +73,9 @@ jobs:
   docker:
     name: Docker Build & Publish
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
     needs:
       - backend
       - frontend

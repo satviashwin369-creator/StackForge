@@ -26,23 +26,31 @@ fake_redis = MagicMock()
 fake_redis.get.return_value = None
 fake_redis.setex.return_value = True
 fake_redis.publish.return_value = 1
+fake_pubsub = MagicMock()
+fake_pubsub.get_message.return_value = None
+fake_redis.pubsub.return_value = fake_pubsub
+
+import app.api.routes.ws
 
 app.utils.redis_client.get_redis = lambda: fake_redis
+app.api.routes.ws.get_redis = lambda: fake_redis
 app.services.log_service.get_redis = lambda: fake_redis
 app.services.deployment_simulator.get_redis = lambda: fake_redis
 app.services.infra_service.get_redis = lambda: fake_redis
 
-from tests.conftest import db_session, client, test_user, auth_headers
+from tests.conftest import _raw_db_session, _raw_client, test_user, auth_headers, TestingSessionLocal
+app.api.routes.ws.SessionLocal = TestingSessionLocal
 import tests.test_auth as ta
 import tests.test_projects as tp
 import tests.test_infra as ti
+import tests.test_ws as tw
 
 
 class StackForgeBackendTestSuite(unittest.TestCase):
     def setUp(self):
-        self._db_gen = db_session()
+        self._db_gen = _raw_db_session()
         self.db = next(self._db_gen)
-        self._client_gen = client(self.db)
+        self._client_gen = _raw_client(self.db)
         self.client = next(self._client_gen)
 
     def tearDown(self):
@@ -103,9 +111,42 @@ class StackForgeBackendTestSuite(unittest.TestCase):
     def test_infra_metrics(self):
         ti.test_metrics_endpoint(self.client)
 
+    # --- WebSocket Security Tests ---
+    def test_ws_logs_missing_token_rejected(self):
+        tw.test_ws_logs_missing_token_rejected(self.client)
+
+    def test_ws_logs_invalid_token_rejected(self):
+        tw.test_ws_logs_invalid_token_rejected(self.client)
+
+    def test_ws_logs_expired_token_rejected(self):
+        user = test_user(self.db)
+        tw.test_ws_logs_expired_token_rejected(self.client, user)
+
+    def test_ws_logs_valid_token_accepted(self):
+        user = test_user(self.db)
+        tw.test_ws_logs_valid_token_accepted(self.client, user)
+
+    def test_ws_status_missing_token_rejected(self):
+        tw.test_ws_status_missing_token_rejected(self.client)
+
+    def test_ws_status_invalid_token_rejected(self):
+        tw.test_ws_status_invalid_token_rejected(self.client)
+
+    def test_ws_status_expired_token_rejected(self):
+        user = test_user(self.db)
+        tw.test_ws_status_expired_token_rejected(self.client, user)
+
+    def test_ws_status_valid_token_accepted(self):
+        user = test_user(self.db)
+        tw.test_ws_status_valid_token_accepted(self.client, user)
+
 
 if __name__ == "__main__":
-    runner = unittest.TextTestRunner(verbosity=2)
-    suite = unittest.defaultTestLoader.loadTestsFromTestCase(StackForgeBackendTestSuite)
-    result = runner.run(suite)
-    sys.exit(0 if result.wasSuccessful() else 1)
+    try:
+        import pytest
+        sys.exit(pytest.main(["tests", "-v"]))
+    except ImportError:
+        runner = unittest.TextTestRunner(verbosity=2)
+        suite = unittest.defaultTestLoader.loadTestsFromTestCase(StackForgeBackendTestSuite)
+        result = runner.run(suite)
+        sys.exit(0 if result.wasSuccessful() else 1)

@@ -50,15 +50,19 @@ def mock_redis(monkeypatch):
     fake_redis.get.return_value = None
     fake_redis.setex.return_value = True
     fake_redis.publish.return_value = 1
+    fake_pubsub = MagicMock()
+    fake_pubsub.get_message.return_value = None
+    fake_redis.pubsub.return_value = fake_pubsub
     monkeypatch.setattr("app.utils.redis_client.get_redis", lambda: fake_redis)
+    monkeypatch.setattr("app.api.routes.ws.get_redis", lambda: fake_redis)
     monkeypatch.setattr("app.services.log_service.get_redis", lambda: fake_redis)
     monkeypatch.setattr("app.services.deployment_simulator.get_redis", lambda: fake_redis)
     monkeypatch.setattr("app.services.infra_service.get_redis", lambda: fake_redis)
+    monkeypatch.setattr("app.api.routes.ws.SessionLocal", TestingSessionLocal)
     return fake_redis
 
 
-@pytest.fixture(scope="function")
-def db_session() -> Generator[Session, None, None]:
+def _raw_db_session() -> Generator[Session, None, None]:
     """Create a fresh schema for each test function and roll back after."""
     Base.metadata.create_all(bind=engine)
     session = TestingSessionLocal()
@@ -70,7 +74,11 @@ def db_session() -> Generator[Session, None, None]:
 
 
 @pytest.fixture(scope="function")
-def client(db_session: Session) -> Generator[TestClient, None, None]:
+def db_session() -> Generator[Session, None, None]:
+    yield from _raw_db_session()
+
+
+def _raw_client(db_session: Session) -> Generator[TestClient, None, None]:
     """TestClient that injects the in-memory test database session."""
     def override_get_db():
         try:
@@ -87,6 +95,11 @@ def client(db_session: Session) -> Generator[TestClient, None, None]:
         yield test_client
 
     app.dependency_overrides.clear()
+
+
+@pytest.fixture(scope="function")
+def client(db_session: Session) -> Generator[TestClient, None, None]:
+    yield from _raw_client(db_session)
 
 
 @pytest.fixture(scope="function")

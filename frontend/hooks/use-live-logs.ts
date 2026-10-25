@@ -76,7 +76,9 @@ export function useLiveLogs({
     if (!enableWebSocket || !deploymentId) return;
 
     const token = getAuthToken();
-    const wsUrl = `${getWsBaseUrl()}/ws/logs/${deploymentId}${token ? `?token=${token}` : ""}`;
+    if (!token) return;
+
+    const wsUrl = `${getWsBaseUrl()}/ws/logs/${deploymentId}?token=${encodeURIComponent(token)}`;
     let ws: WebSocket | null = null;
 
     try {
