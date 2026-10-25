@@ -13,10 +13,13 @@ spec:
       labels:
         app: worker
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: worker
           image: ghcr.io/satviashwin369-creator/stackforge-backend:latest
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
           command:
             - celery
             - -A

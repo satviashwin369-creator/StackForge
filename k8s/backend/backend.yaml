@@ -13,10 +13,13 @@ spec:
       labels:
         app: backend
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: backend
           image: ghcr.io/satviashwin369-creator/stackforge-backend:latest
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
           ports:
             - containerPort: 8000
           resources:

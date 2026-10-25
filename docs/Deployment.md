@@ -61,17 +61,17 @@ StackForge includes hardened, declarative Kubernetes manifests in `k8s/` designe
 ### Manifest Hierarchy
 ```text
 k8s/
-├── namespace.yaml       # Defines the 'stackforge' namespace
-├── secret.yaml          # Defines 'stackforge-secrets' (DB, JWT)
+├── namespace.yaml           # Defines the 'stackforge' namespace
+├── secret.yaml.example      # Tracked template for 'stackforge-secrets' (DB, JWT)
 ├── database/
-│   └── postgres.yaml   # 5Gi PVC, PostgreSQL Deployment & Service
+│   └── postgres.yaml       # 5Gi PVC, PostgreSQL Deployment & Service
 ├── redis/
-│   └── redis.yaml      # Redis Deployment & ClusterIP Service
+│   └── redis.yaml          # Redis Deployment & ClusterIP Service
 ├── backend/
-│   ├── backend.yaml    # FastAPI API Deployment, Service, Probes & Resources
-│   └── worker.yaml     # Celery Worker Deployment & Resources
+│   ├── backend.yaml        # FastAPI API Deployment, Service, Probes & Resources
+│   └── worker.yaml         # Celery Worker Deployment & Resources
 └── frontend/
-    └── frontend.yaml   # Next.js Deployment, NodePort Service & Resources
+    └── frontend.yaml       # Next.js Deployment, NodePort Service & Resources
 ```
 
 ### Deployment Instructions
@@ -84,8 +84,16 @@ minikube start --cpus=4 --memory=4096
 # 2. Create the namespace first
 kubectl apply -f k8s/namespace.yaml
 
-# 3. Apply Secrets (contains local dev defaults; customize for production)
+# 3. Provision Secrets (copy example template or create dynamically)
+# Option A: Local testing via untracked secret file (ignored by Git)
+cp k8s/secret.yaml.example k8s/secret.yaml
 kubectl apply -f k8s/secret.yaml
+
+# Option B: Dynamic Secret creation (recommended for production/CI)
+# kubectl create secret generic stackforge-secrets -n stackforge \
+#   --from-literal=POSTGRES_PASSWORD='<secure-password>' \
+#   --from-literal=DATABASE_URL='postgresql+psycopg2://stackforge:<secure-password>@db:5432/stackforge' \
+#   --from-literal=JWT_SECRET_KEY='<secure-64-char-random-key>'
 
 # 4. Deploy Database & Redis dependencies
 kubectl apply -f k8s/database/
@@ -101,9 +109,20 @@ kubectl apply -f k8s/frontend/
 kubectl get pods -n stackforge
 kubectl get pvc -n stackforge
 
-# 8. Access Frontend via Port Forwarding
-kubectl port-forward svc/frontend -n stackforge 3000:3000
+# 8. Port-Forward Services for Local Browser Access
+# Frontend Web Dashboard (Port 3000)
+kubectl port-forward svc/frontend -n stackforge 3000:3000 &
+
+# Backend API & WebSocket Endpoint (Port 8000)
+# Required for real-time WebSocket live logs at ws://localhost:8000/api/v1.
+# If port 8000 is not forwarded, the frontend gracefully falls back to HTTP polling.
+kubectl port-forward svc/backend -n stackforge 8000:8000 &
 ```
+
+### WebSocket vs HTTP Polling Architecture
+- **Browser WebSocket Routing:** Browser client connections cannot traverse Next.js server-side HTTP route proxies. They connect directly to `NEXT_PUBLIC_WS_URL` (`ws://localhost:8000/api/v1`).
+- **Dual Port-Forwarding:** Port-forwarding `svc/backend` to host port `8000` allows browser WebSocket handshakes to reach FastAPI directly.
+- **Graceful Polling Fallback:** If `svc/backend` is not forwarded or WebSocket communication fails, the frontend `useLiveLogs` hook automatically falls back to HTTP polling (`/api/v1/deployments/<id>/logs`) through Next.js rewrite proxying every 3 seconds.
 
 ---
 
