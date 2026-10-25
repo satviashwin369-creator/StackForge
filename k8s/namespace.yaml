@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: stackforge
+  labels:
+    app.kubernetes.io/name: stackforge
+    app.kubernetes.io/part-of: stackforge

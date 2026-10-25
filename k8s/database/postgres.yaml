@@ -31,11 +31,21 @@ spec:
           image: postgres:16-alpine
           ports:
             - containerPort: 5432
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
           env:
             - name: POSTGRES_USER
               value: stackforge
             - name: POSTGRES_PASSWORD
-              value: stackforge_secret
+              valueFrom:
+                secretKeyRef:
+                  name: stackforge-secrets
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_DB
               value: stackforge
           volumeMounts:
