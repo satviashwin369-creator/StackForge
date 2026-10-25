@@ -60,16 +60,8 @@ export default function DashboardOverviewPage() {
         <>
           <StatCard
             title="Active deployments"
-            value={String(
-              (kpis.data as any).activeDeployments ??
-                (kpis.data as any).totalDeployments ??
-                "—"
-            )}
-            trend={
-              (kpis.data as any).activeDeploymentsTrend ??
-              (kpis.data as any).totalDeploymentsTrend ??
-              0
-            }
+            value={String(kpis.data.activeDeployments ?? "—")}
+            trend={kpis.data.activeDeploymentsTrend ?? 0}
             trendLabel="vs last hour"
             icon={Rocket}
             index={0}
@@ -77,9 +69,9 @@ export default function DashboardOverviewPage() {
 
           <StatCard
             title="System uptime"
-            value={`${(kpis.data as any).uptimePercent}%`}
+            value={`${kpis.data.uptimePercent}%`}
             subtitle="Last 30 days"
-            trend={(kpis.data as any).uptimeTrend ?? 0}
+            trend={kpis.data.uptimeTrend ?? 0}
             trendLabel="vs last month"
             icon={Activity}
             index={1}
@@ -87,16 +79,8 @@ export default function DashboardOverviewPage() {
 
           <StatCard
             title="Failed builds"
-            value={String(
-              (kpis.data as any).failedBuilds ??
-                (kpis.data as any).failureRate ??
-                "—"
-            )}
-            trend={
-              (kpis.data as any).failedBuildsTrend ??
-              (kpis.data as any).failureRateTrend ??
-              0
-            }
+            value={String(kpis.data.failedBuilds ?? "—")}
+            trend={kpis.data.failedBuildsTrend ?? 0}
             trendLabel="vs yesterday"
             icon={AlertTriangle}
             index={2}
@@ -104,19 +88,11 @@ export default function DashboardOverviewPage() {
 
           <StatCard
             title="Running services"
-            value={String(
-              (kpis.data as any).runningServices ??
-              (kpis.data as any).activeProjects ??
-              "—"
-            )}
-            trend={
-            (kpis.data as any).runningServicesTrend ??
-            (kpis.data as any).activeProjectsTrend ??
-            0
-          }
-          trendLabel="healthy"
-          icon={Server}
-          index={3}
+            value={String(kpis.data.runningServices ?? "—")}
+            trend={kpis.data.runningServicesTrend ?? 0}
+            trendLabel="healthy"
+            icon={Server}
+            index={3}
           />
         </>
       ) : null}

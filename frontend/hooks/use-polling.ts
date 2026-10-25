@@ -9,7 +9,10 @@ export function usePolling(
   enabled = true
 ) {
   const saved = useRef(callback);
-  saved.current = callback;
+
+  useEffect(() => {
+    saved.current = callback;
+  }, [callback]);
 
   useEffect(() => {
     if (!enabled) return;

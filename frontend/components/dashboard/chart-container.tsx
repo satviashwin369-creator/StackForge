@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import { cn } from "@/lib/utils";
 
 interface ChartContainerProps {
@@ -9,17 +9,19 @@ interface ChartContainerProps {
   children: React.ReactNode;
 }
 
+const emptySubscribe = () => () => {};
+
 /** Defers chart render until mount so Recharts gets valid dimensions. */
 export function ChartContainer({
   height = 228,
   className,
   children,
 }: ChartContainerProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(
+    emptySubscribe,
+    () => true,
+    () => false
+  );
 
   if (!mounted) {
     return (
