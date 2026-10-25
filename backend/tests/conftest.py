@@ -2,11 +2,27 @@ import uuid
 from typing import Generator
 from unittest.mock import MagicMock
 
-import pytest
+try:
+    import pytest
+except ImportError:
+    class _MockPytest:
+        @staticmethod
+        def fixture(*args, **kwargs):
+            def decorator(f):
+                return f
+            if len(args) == 1 and callable(args[0]):
+                return args[0]
+            return decorator
+    pytest = _MockPytest()
+
+import sys
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
+
+if "redis" not in sys.modules:
+    sys.modules["redis"] = MagicMock()
 
 from app.core.config import get_settings
 from app.core.deps import get_db
