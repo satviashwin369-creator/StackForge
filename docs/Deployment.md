@@ -1,75 +1,128 @@
 # StackForge Deployment Guide 🚀
 
-This document covers running StackForge locally using Docker Compose and preparing for production Kubernetes deployment.
+This document covers running StackForge locally using Docker Compose, deploying to a local Kubernetes cluster, and considerations for public portfolio demonstrations.
 
 ---
 
 ## 1. Local Deployment (Docker Compose)
 
-### Stack Overview
-The local deployment runs all 9 core services on a dedicated bridge network (`stackforge-net`):
+### Architecture Profiles
+To ensure rapid, trouble-free startup across all operating systems (especially Windows), StackForge organizes services into two Compose profiles:
+
+1. **Default Profile (Core IDP - 7 Services):**
+   - `frontend`: Next.js 16 Web Dashboard (Port `3000`)
+   - `backend`: FastAPI Application API (Port `8000`)
+   - `worker`: Celery Background Worker
+   - `db`: PostgreSQL 16 Alpine Database (Port `5432`)
+   - `redis`: Redis 7 Alpine Broker & Pub/Sub (Port `6379`)
+   - `prometheus`: Prometheus Metrics Scraper (Port `9090`)
+   - `grafana`: Grafana Analytics & Dashboards (Port `3001`)
+
+2. **Optional Logging Profile (`--profile logging` - 2 Additional Services):**
+   - `loki`: Grafana Loki 3.5.0 Log Storage (Port `3100`)
+   - `alloy`: Grafana Alloy v1.10.2 Docker Log Forwarder (Port `12345`)
+
+### Quick Start Commands
 
 ```bash
-# 1. Ensure Docker daemon is active
-docker info
+# 1. Clone repository and navigate to root
+cd stackforge
 
-# 2. Check environment variables
-cat .env
+# 2. Configure environment file (or use defaults)
+cp .env.example .env
 
-# 3. Spin up full stack
+# 3. Launch Core Services (Fast, zero socket-mount issues)
 docker compose up -d --build
 
-# 4. View logs across all services
-docker compose logs -f
+# 4. (Optional) Launch with Full Log Aggregation
+docker compose --profile logging up -d
 
-# 5. Check container health status
+# 5. Check Service Health
 docker compose ps
+
+# 6. View Consolidated Logs
+docker compose logs -f backend frontend
 ```
 
-### Healthcheck Verifications
-- **Backend:** `curl http://localhost:8000/health`
-- **PostgreSQL:** Checked using `pg_isready -U stackforge -d stackforge`
-- **Redis:** Checked using `redis-cli ping`
-- **Prometheus:** `curl http://localhost:9090/-/ready`
-- **Grafana:** `curl http://localhost:3001/api/health`
-- **Loki:** Label check via `curl http://localhost:3100/loki/api/v1/label/service_name/values`
+### Health & Endpoint Verification
+- **Frontend Dashboard:** `http://localhost:3000`
+- **Backend Swagger Docs:** `http://localhost:8000/docs`
+- **Backend Health Check:** `curl -s http://localhost:8000/health` (returns `{"status":"ok"}`)
+- **Prometheus Metrics:** `curl -s http://localhost:8000/metrics`
+- **Prometheus Targets:** `http://localhost:9090/targets` (state `UP`)
+- **Grafana Dashboards:** `http://localhost:3001` (pre-provisioned with `StackForge Platform Overview`)
 
 ---
 
-## 2. Observability Integration
+## 2. Kubernetes Deployment (Minikube / kind)
 
-### Docker Log Forwarding with Alloy
-Alloy mounts `/var/run/docker.sock` and `/var/lib/docker/containers`. It extracts container names and Docker Compose service labels dynamically:
+StackForge includes hardened, declarative Kubernetes manifests in `k8s/` designed for local cluster deployment.
 
-```alloy
-discovery.docker "containers" {
-  host = "unix:///var/run/docker.sock"
-}
+### Manifest Hierarchy
+```text
+k8s/
+├── namespace.yaml       # Defines the 'stackforge' namespace
+├── secret.yaml          # Defines 'stackforge-secrets' (DB, JWT)
+├── database/
+│   └── postgres.yaml   # 5Gi PVC, PostgreSQL Deployment & Service
+├── redis/
+│   └── redis.yaml      # Redis Deployment & ClusterIP Service
+├── backend/
+│   ├── backend.yaml    # FastAPI API Deployment, Service, Probes & Resources
+│   └── worker.yaml     # Celery Worker Deployment & Resources
+└── frontend/
+    └── frontend.yaml   # Next.js Deployment, NodePort Service & Resources
+```
 
-discovery.relabel "docker_compose" {
-  targets = discovery.docker.containers.targets
+### Deployment Instructions
 
-  rule {
-    source_labels = ["__meta_docker_container_id"]
-    regex = "(.+)"
-    target_label = "__path__"
-    replacement = "/var/lib/docker/containers/$1/$1-json.log"
-  }
+```bash
+# 1. Start your local cluster (Minikube or kind)
+minikube start --cpus=4 --memory=4096
+# OR: kind create cluster --name stackforge
 
-  rule {
-    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
-    regex = "(.+)"
-    target_label = "service_name"
-  }
-}
+# 2. Create the namespace first
+kubectl apply -f k8s/namespace.yaml
+
+# 3. Apply Secrets (contains local dev defaults; customize for production)
+kubectl apply -f k8s/secret.yaml
+
+# 4. Deploy Database & Redis dependencies
+kubectl apply -f k8s/database/
+kubectl apply -f k8s/redis/
+
+# 5. Deploy Backend and Celery Worker
+kubectl apply -f k8s/backend/
+
+# 6. Deploy Frontend
+kubectl apply -f k8s/frontend/
+
+# 7. Check Pod and PVC status
+kubectl get pods -n stackforge
+kubectl get pvc -n stackforge
+
+# 8. Access Frontend via Port Forwarding
+kubectl port-forward svc/frontend -n stackforge 3000:3000
 ```
 
 ---
 
-## 3. Production Roadmap (Milestone 9)
+## 3. Infrastructure as Code (Terraform)
 
-In production environments:
-1. **Container Orchestration:** Deploy on Kubernetes using Helm or Kustomize manifests.
-2. **Database:** Transition from containerized PostgreSQL to managed cloud databases (AWS RDS / Cloud SQL).
-3. **Caching:** Transition to managed Redis (AWS ElastiCache / Redis Cloud).
-4. **GitOps:** Continuously sync state from Git using Argo CD.
+The `terraform/` directory contains optional Infrastructure-as-Code modules for cloud provisioning.
+
+- **Role:** Optional IaC extension demonstrating HCL modularity and AWS provider configuration.
+- **Resource Ownership:** To prevent configuration drift, raw Kubernetes manifests in `k8s/` are the authoritative deployment mechanism for clusters. Terraform should not be used to duplicate or overwrite resources already managed by `k8s/`.
+
+---
+
+## 4. Public Portfolio Demo Strategy
+
+If you wish to demonstrate StackForge publicly without running a local Kubernetes cluster:
+
+- **Why Not Serverless / Vercel Alone:** StackForge relies on persistent WebSockets (`/ws/logs`), an active Celery worker, and long-running Docker containers. Pure serverless platforms (like Vercel) terminate functions after short execution windows and do not support background workers or persistent TCP sockets.
+- **Recommended Free/Low-Cost Architecture:**
+  - **Database:** Managed PostgreSQL via Neon (free tier) or Supabase (free tier).
+  - **Redis:** Upstash Redis (free tier serverless Redis).
+  - **Containers:** Deploy Frontend and FastAPI Backend as container services on Render or Railway.
+  - **Local DevOps Focus:** For technical interviews, your local Docker Compose and Kubernetes demonstrations remain the strongest proof of DevOps competency.
