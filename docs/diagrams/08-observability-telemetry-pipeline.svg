@@ -1,0 +1,182 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad8" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0e17"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="cardGrad8" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <filter id="shadow8" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+    <marker id="promArrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#f59e0b"/>
+    </marker>
+    <marker id="lokiArrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#3b82f6"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#bgGrad8)"/>
+  <rect x="15" y="15" width="1170" height="770" rx="12" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Title Header -->
+  <g transform="translate(40, 35)">
+    <rect x="0" y="0" width="40" height="40" rx="8" fill="#f59e0b"/>
+    <text x="20" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">📊</text>
+    <text x="55" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="bold" fill="#f8fafc">StackForge — Full-Stack Observability &amp; Telemetry Dataflow</text>
+    <text x="55" y="40" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#94a3b8">Prometheus Pull Scrapes (15s) • Grafana Auto-Provisioned Dashboards • Loki Log Aggregation • Alloy Collector</text>
+  </g>
+
+  <!-- COLUMN 1: TELEMETRY PRODUCERS (Width 280) -->
+  <g transform="translate(40, 95)" filter="url(#shadow8)">
+    <rect width="280" height="660" rx="10" fill="url(#cardGrad8)" stroke="#f59e0b" stroke-width="1.5"/>
+    <rect x="0" y="0" width="280" height="30" rx="10" fill="#b45309"/>
+    <rect x="0" y="20" width="280" height="10" fill="#b45309"/>
+    <text x="15" y="20" font-family="monospace" font-size="12" font-weight="bold" fill="#fef3c7">1. TELEMETRY PRODUCERS</text>
+
+    <!-- FastAPI Metrics Producer -->
+    <g transform="translate(15, 45)">
+      <rect width="250" height="260" rx="8" fill="#0f172a" stroke="#d97706" stroke-width="1"/>
+      <text x="15" y="26" font-family="monospace" font-size="12" font-weight="bold" fill="#fbbf24">FastAPI Application</text>
+      <text x="15" y="45" font-family="monospace" font-size="10" fill="#94a3b8">backend:8000/metrics</text>
+      <line x1="15" y1="55" x2="235" y2="55" stroke="#334155" stroke-width="1"/>
+      
+      <text x="15" y="75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="bold" fill="#cbd5e1">Exposed Prometheus Metrics:</text>
+      <text x="15" y="98" font-family="monospace" font-size="10" fill="#38bdf8">• http_requests_total</text>
+      <text x="25" y="114" font-family="monospace" font-size="9" fill="#94a3b8">Labels: method, handler, status</text>
+      
+      <text x="15" y="136" font-family="monospace" font-size="10" fill="#38bdf8">• http_request_duration_seconds</text>
+      <text x="25" y="152" font-family="monospace" font-size="9" fill="#94a3b8">Histogram: p50, p90, p99 latency</text>
+
+      <text x="15" y="174" font-family="monospace" font-size="10" fill="#38bdf8">• stackforge_deployments_total</text>
+      <text x="25" y="190" font-family="monospace" font-size="9" fill="#94a3b8">Counter: status (SUCCESS/FAILED)</text>
+
+      <text x="15" y="212" font-family="monospace" font-size="10" fill="#38bdf8">• active_deployments_gauge</text>
+      <text x="25" y="228" font-family="monospace" font-size="9" fill="#94a3b8">Gauge: in-flight Celery tasks</text>
+    </g>
+
+    <!-- Container Log Producer -->
+    <g transform="translate(15, 330)">
+      <rect width="250" height="300" rx="8" fill="#0f172a" stroke="#2563eb" stroke-width="1"/>
+      <text x="15" y="26" font-family="monospace" font-size="12" font-weight="bold" fill="#60a5fa">Docker Daemon Logs</text>
+      <text x="15" y="45" font-family="monospace" font-size="10" fill="#94a3b8">Container stdout &amp; stderr</text>
+      <line x1="15" y1="55" x2="235" y2="55" stroke="#334155" stroke-width="1"/>
+      
+      <text x="15" y="75" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="bold" fill="#cbd5e1">Monitored Service Streams:</text>
+      <text x="15" y="98" font-family="monospace" font-size="10" fill="#93c5fd">• stackforge-frontend</text>
+      <text x="15" y="120" font-family="monospace" font-size="10" fill="#93c5fd">• stackforge-backend</text>
+      <text x="15" y="142" font-family="monospace" font-size="10" fill="#93c5fd">• stackforge-worker</text>
+      <text x="15" y="164" font-family="monospace" font-size="10" fill="#93c5fd">• stackforge-db</text>
+      <text x="15" y="186" font-family="monospace" font-size="10" fill="#93c5fd">• stackforge-redis</text>
+
+      <text x="15" y="220" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#a7f3d0">Location:</text>
+      <text x="15" y="238" font-family="monospace" font-size="9" fill="#cbd5e1">/var/lib/docker/containers/*/*.log</text>
+    </g>
+  </g>
+
+  <!-- COLUMN 2: COLLECTORS & STORAGE (Width 360) -->
+  <g transform="translate(360, 95)" filter="url(#shadow8)">
+    <rect width="360" height="660" rx="10" fill="url(#cardGrad8)" stroke="#38bdf8" stroke-width="1.5"/>
+    <rect x="0" y="0" width="360" height="30" rx="10" fill="#0284c7"/>
+    <rect x="0" y="20" width="360" height="10" fill="#0284c7"/>
+    <text x="15" y="20" font-family="monospace" font-size="12" font-weight="bold" fill="#f0f9ff">2. COLLECTION &amp; TIME-SERIES STORAGE</text>
+
+    <!-- Prometheus Collector Box -->
+    <g transform="translate(15, 45)">
+      <rect width="330" height="260" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="15" y="28" font-family="monospace" font-size="13" font-weight="bold" fill="#fbbf24">Prometheus Server (:9090)</text>
+      <text x="15" y="50" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#cbd5e1">Configuration: prometheus/prometheus.yml</text>
+
+      <rect x="15" y="65" width="300" height="80" rx="6" fill="#1e293b"/>
+      <text x="25" y="85" font-family="monospace" font-size="10" fill="#fcd34d">scrape_configs:</text>
+      <text x="35" y="103" font-family="monospace" font-size="10" fill="#cbd5e1">- job_name: 'stackforge-backend'</text>
+      <text x="45" y="121" font-family="monospace" font-size="10" fill="#cbd5e1">scrape_interval: 15s</text>
+      <text x="45" y="139" font-family="monospace" font-size="10" fill="#34d399">static_configs: ['backend:8000']</text>
+
+      <text x="15" y="175" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" font-weight="bold" fill="#cbd5e1">Local TSDB Engine:</text>
+      <text x="15" y="195" font-family="monospace" font-size="10" fill="#94a3b8">Storage: 15-day sample retention</text>
+      <text x="15" y="213" font-family="monospace" font-size="10" fill="#94a3b8">Volume: prometheus_data (persistent)</text>
+      <text x="15" y="235" font-family="monospace" font-size="10" fill="#34d399">✓ Health: http://localhost:9090/-/healthy</text>
+    </g>
+
+    <!-- Loki & Alloy Collector Box -->
+    <g transform="translate(15, 330)">
+      <rect width="330" height="300" rx="8" fill="#0f172a" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="15" y="28" font-family="monospace" font-size="13" font-weight="bold" fill="#60a5fa">Loki (:3100) &amp; Alloy (:12345)</text>
+      <text x="15" y="50" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#cbd5e1">Optional Profile: --profile logging</text>
+
+      <!-- Alloy Card -->
+      <rect x="15" y="65" width="300" height="95" rx="6" fill="#1e293b"/>
+      <text x="25" y="85" font-family="monospace" font-size="11" font-weight="bold" fill="#93c5fd">Grafana Alloy Shipper</text>
+      <text x="25" y="105" font-family="monospace" font-size="9" fill="#cbd5e1">loki.source.docker discovers containers</text>
+      <text x="25" y="123" font-family="monospace" font-size="9" fill="#cbd5e1">Applies labels: container_name, service</text>
+      <text x="25" y="141" font-family="monospace" font-size="9" fill="#34d399">Pushes compressed batches to Loki:3100</text>
+
+      <!-- Loki Card -->
+      <rect x="15" y="175" width="300" height="105" rx="6" fill="#1e293b"/>
+      <text x="25" y="195" font-family="monospace" font-size="11" font-weight="bold" fill="#93c5fd">Grafana Loki Engine</text>
+      <text x="25" y="215" font-family="monospace" font-size="9" fill="#cbd5e1">TSDB-shipper v13 schema</text>
+      <text x="25" y="233" font-family="monospace" font-size="9" fill="#cbd5e1">Indexes labels; compresses stream chunks</text>
+      <text x="25" y="251" font-family="monospace" font-size="9" fill="#34d399">Volume: loki_data (persistent)</text>
+    </g>
+  </g>
+
+  <!-- COLUMN 3: UNIFIED GRAFANA DASHBOARDS (Width 400) -->
+  <g transform="translate(760, 95)" filter="url(#shadow8)">
+    <rect width="400" height="660" rx="10" fill="url(#cardGrad8)" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="0" y="0" width="400" height="30" rx="10" fill="#047857"/>
+    <rect x="0" y="20" width="400" height="10" fill="#047857"/>
+    <text x="15" y="20" font-family="monospace" font-size="12" font-weight="bold" fill="#ecfdf5">3. UNIFIED GRAFANA 12 VISUALIZATION (:3001)</text>
+
+    <!-- Auto-Provisioning Callout -->
+    <g transform="translate(20, 45)">
+      <rect width="360" height="85" rx="8" fill="#0f172a" stroke="#059669" stroke-width="1"/>
+      <text x="15" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="bold" fill="#34d399">Zero-Touch Auto-Provisioning</text>
+      <text x="15" y="44" font-family="monospace" font-size="10" fill="#cbd5e1">Datasources: Prometheus &amp; Loki YAMLs</text>
+      <text x="15" y="62" font-family="monospace" font-size="10" fill="#cbd5e1">Dashboards: JSON templates auto-loaded on boot</text>
+    </g>
+
+    <!-- Dashboard Preview 1: Platform Overview -->
+    <g transform="translate(20, 145)">
+      <rect width="360" height="230" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="15" y="26" font-family="monospace" font-size="11" font-weight="bold" fill="#a7f3d0">Dashboard: "StackForge Platform Overview"</text>
+
+      <!-- Panel 1: Throughput -->
+      <rect x="15" y="40" width="160" height="80" rx="6" fill="#1e293b"/>
+      <text x="25" y="60" font-family="monospace" font-size="9" fill="#94a3b8">API Request Rate</text>
+      <text x="25" y="82" font-family="monospace" font-size="18" font-weight="bold" fill="#60a5fa">42.8 rps</text>
+      <text x="25" y="105" font-family="monospace" font-size="8" fill="#34d399">rate(http_requests_total)</text>
+
+      <!-- Panel 2: P95 Latency -->
+      <rect x="185" y="40" width="160" height="80" rx="6" fill="#1e293b"/>
+      <text x="195" y="60" font-family="monospace" font-size="9" fill="#94a3b8">P95 HTTP Latency</text>
+      <text x="195" y="82" font-family="monospace" font-size="18" font-weight="bold" fill="#fbbf24">34.2 ms</text>
+      <text x="195" y="105" font-family="monospace" font-size="8" fill="#94a3b8">histogram_quantile(0.95)</text>
+
+      <!-- Panel 3: Deployment Success Ratio -->
+      <rect x="15" y="130" width="330" height="80" rx="6" fill="#1e293b"/>
+      <text x="25" y="150" font-family="monospace" font-size="9" fill="#94a3b8">Deployment Pipeline Success vs Failure Ratio</text>
+      <text x="25" y="175" font-family="monospace" font-size="16" font-weight="bold" fill="#34d399">94.2% Success Rate</text>
+      <text x="25" y="195" font-family="monospace" font-size="8" fill="#94a3b8">sum(stackforge_deployments{status="SUCCESS"})</text>
+    </g>
+
+    <!-- Dashboard Preview 2: Live Log Stream -->
+    <g transform="translate(20, 390)">
+      <rect width="360" height="235" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="15" y="26" font-family="monospace" font-size="11" font-weight="bold" fill="#a7f3d0">Dashboard: "Live Container Logs (LogQL)"</text>
+
+      <rect x="15" y="40" width="330" height="40" rx="4" fill="#1e293b"/>
+      <text x="25" y="65" font-family="monospace" font-size="10" fill="#38bdf8">{service="stackforge-backend"} |= "ERROR"</text>
+
+      <rect x="15" y="90" width="330" height="125" rx="4" fill="#090d16"/>
+      <text x="25" y="110" font-family="monospace" font-size="9" fill="#a7f3d0">[INFO] Celery task dispatched dep-8742</text>
+      <text x="25" y="130" font-family="monospace" font-size="9" fill="#fca5a5">[WARN] Test stage transient retry 1/3</text>
+      <text x="25" y="150" font-family="monospace" font-size="9" fill="#a7f3d0">[INFO] Stage BUILD complete in 12.4s</text>
+      <text x="25" y="170" font-family="monospace" font-size="9" fill="#a7f3d0">[INFO] Stage DEPLOY complete in 4.1s</text>
+      <text x="25" y="195" font-family="monospace" font-size="9" fill="#34d399">✓ Log stream live from Grafana Loki</text>
+    </g>
+  </g>
+</svg>

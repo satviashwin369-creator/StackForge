@@ -1,0 +1,176 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad7" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0a0e17"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="cardGrad7" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#1e293b"/>
+      <stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <filter id="shadow7" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+    <marker id="wsArrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#10b981"/>
+    </marker>
+    <marker id="wsArrowRed" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M 0 1 L 10 5 L 0 9 z" fill="#ef4444"/>
+    </marker>
+  </defs>
+
+  <rect width="1200" height="800" fill="url(#bgGrad7)"/>
+  <rect x="15" y="15" width="1170" height="770" rx="12" fill="none" stroke="#1e293b" stroke-width="1.5"/>
+
+  <!-- Title Header -->
+  <g transform="translate(40, 35)">
+    <rect x="0" y="0" width="40" height="40" rx="8" fill="#10b981"/>
+    <text x="20" y="26" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">📡</text>
+    <text x="55" y="24" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="20" font-weight="bold" fill="#f8fafc">StackForge — Real-Time WebSocket Protocol &amp; State Machine</text>
+    <text x="55" y="40" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" fill="#94a3b8">Sub-10ms Streaming Latency • Redis Pub/Sub Bus • Exponential Backoff • HTTP Polling Fallback</text>
+  </g>
+
+  <!-- Left Side: Connection Lifecycle State Machine -->
+  <g transform="translate(40, 95)" filter="url(#shadow7)">
+    <rect width="660" height="660" rx="10" fill="url(#cardGrad7)" stroke="#10b981" stroke-width="1.5"/>
+    <rect x="0" y="0" width="660" height="30" rx="10" fill="#065f46"/>
+    <rect x="0" y="20" width="660" height="10" fill="#065f46"/>
+    <text x="20" y="20" font-family="monospace" font-size="12" font-weight="bold" fill="#ecfdf5">PROTOCOL STATE MACHINE LIFECYCLE (useLiveLogs Hook)</text>
+
+    <!-- State 1: DISCONNECTED -->
+    <g transform="translate(40, 60)">
+      <rect width="240" height="70" rx="8" fill="#0f172a" stroke="#64748b" stroke-width="1.5"/>
+      <text x="15" y="28" font-family="monospace" font-size="12" font-weight="bold" fill="#cbd5e1">1. DISCONNECTED</text>
+      <text x="15" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#94a3b8">Component mounted; idle state</text>
+    </g>
+
+    <!-- Arrow 1 -> 2 -->
+    <line x1="160" y1="130" x2="160" y2="170" stroke="#10b981" stroke-width="2" marker-end="url(#wsArrow)"/>
+    <text x="175" y="155" font-family="monospace" font-size="10" fill="#34d399">Trigger: Open Terminal</text>
+
+    <!-- State 2: AUTHENTICATING -->
+    <g transform="translate(40, 170)">
+      <rect width="240" height="75" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="15" y="28" font-family="monospace" font-size="12" font-weight="bold" fill="#60a5fa">2. AUTHENTICATING</text>
+      <text x="15" y="48" font-family="monospace" font-size="10" fill="#94a3b8">ws://backend/ws/logs/{id}</text>
+      <text x="15" y="64" font-family="monospace" font-size="10" fill="#93c5fd">Query: ?token=&lt;JWT&gt;</text>
+    </g>
+
+    <!-- Arrow 2 -> Fail (Right) -->
+    <line x1="280" y1="205" x2="380" y2="205" stroke="#ef4444" stroke-width="2" marker-end="url(#wsArrowRed)"/>
+    <text x="330" y="195" font-family="monospace" font-size="10" fill="#f87171" text-anchor="middle">Invalid JWT</text>
+
+    <!-- Fail State -->
+    <g transform="translate(380, 175)">
+      <rect width="240" height="60" rx="8" fill="#450a0a" stroke="#ef4444" stroke-width="1"/>
+      <text x="15" y="26" font-family="monospace" font-size="11" font-weight="bold" fill="#fca5a5">AUTH_FAILED (Close 1008)</text>
+      <text x="15" y="45" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#fecaca">Policy Violation • Abort</text>
+    </g>
+
+    <!-- Arrow 2 -> 3 -->
+    <line x1="160" y1="245" x2="160" y2="285" stroke="#10b981" stroke-width="2" marker-end="url(#wsArrow)"/>
+    <text x="175" y="270" font-family="monospace" font-size="10" fill="#34d399">Token OK (Sub extracted)</text>
+
+    <!-- State 3: HISTORICAL_SYNC -->
+    <g transform="translate(40, 285)">
+      <rect width="240" height="75" rx="8" fill="#0f172a" stroke="#2563eb" stroke-width="1.5"/>
+      <text x="15" y="28" font-family="monospace" font-size="12" font-weight="bold" fill="#60a5fa">3. HISTORICAL_SYNC</text>
+      <text x="15" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#94a3b8">Query PostgreSQL deployment_logs</text>
+      <text x="15" y="64" font-family="monospace" font-size="10" fill="#cbd5e1">Push initial log array to UI</text>
+    </g>
+
+    <!-- Arrow 3 -> 4 -->
+    <line x1="160" y1="360" x2="160" y2="400" stroke="#10b981" stroke-width="2" marker-end="url(#wsArrow)"/>
+    <text x="175" y="385" font-family="monospace" font-size="10" fill="#34d399">Sync Complete</text>
+
+    <!-- State 4: STREAMING_ACTIVE -->
+    <g transform="translate(40, 400)">
+      <rect width="240" height="85" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="2"/>
+      <text x="15" y="28" font-family="monospace" font-size="12" font-weight="bold" fill="#34d399">4. STREAMING_ACTIVE</text>
+      <text x="15" y="48" font-family="monospace" font-size="10" fill="#a7f3d0">Redis SUBSCRIBE</text>
+      <text x="15" y="64" font-family="monospace" font-size="10" fill="#94a3b8">"deployments:{id}:logs"</text>
+      <text x="15" y="78" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="9" fill="#34d399">Sub-10ms frame rendering</text>
+    </g>
+
+    <!-- Arrow 4 -> Drop (Right) -->
+    <line x1="280" y1="440" x2="380" y2="440" stroke="#f59e0b" stroke-width="2" marker-end="url(#wsArrow)"/>
+    <text x="330" y="430" font-family="monospace" font-size="10" fill="#fbbf24" text-anchor="middle">Network Blip</text>
+
+    <!-- State 5: BACKOFF_RETRY -->
+    <g transform="translate(380, 410)">
+      <rect width="240" height="75" rx="8" fill="#0f172a" stroke="#f59e0b" stroke-width="1.5"/>
+      <text x="15" y="28" font-family="monospace" font-size="12" font-weight="bold" fill="#fbbf24">5. BACKOFF_RETRY</text>
+      <text x="15" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#cbd5e1">Exponential intervals:</text>
+      <text x="15" y="64" font-family="monospace" font-size="10" fill="#fcd34d">1s → 2s → 4s → 8s (Max 5)</text>
+    </g>
+
+    <!-- Arrow Retry -> Reconnecting -->
+    <path d="M 500 410 L 500 200 L 280 200" stroke="#f59e0b" stroke-width="1.5" stroke-dasharray="4,4" fill="none"/>
+    <text x="440" y="270" font-family="monospace" font-size="9" fill="#fbbf24">Reconnection Loop</text>
+
+    <!-- Arrow Backoff -> Polling (Down) -->
+    <line x1="500" y1="485" x2="500" y2="530" stroke="#f59e0b" stroke-width="2" marker-end="url(#wsArrow)"/>
+    <text x="510" y="510" font-family="monospace" font-size="10" fill="#fbbf24">Retries &gt; 5 Failed</text>
+
+    <!-- State 6: POLLING_FALLBACK -->
+    <g transform="translate(380, 530)">
+      <rect width="240" height="85" rx="8" fill="#0f172a" stroke="#3b82f6" stroke-width="1.5"/>
+      <text x="15" y="28" font-family="monospace" font-size="12" font-weight="bold" fill="#60a5fa">6. POLLING_FALLBACK</text>
+      <text x="15" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#cbd5e1">Corporate Proxy / WS Blocked</text>
+      <text x="15" y="64" font-family="monospace" font-size="10" fill="#93c5fd">HTTP GET /api/v1/logs</text>
+      <text x="15" y="78" font-family="monospace" font-size="10" fill="#34d399">Poll interval: 3 seconds</text>
+    </g>
+
+    <!-- Bottom: TERMINATED -->
+    <g transform="translate(40, 550)">
+      <rect width="240" height="65" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1.5"/>
+      <text x="15" y="28" font-family="monospace" font-size="12" font-weight="bold" fill="#34d399">7. TERMINATED</text>
+      <text x="15" y="48" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#94a3b8">Stage == SUCCESS or FAILED</text>
+    </g>
+    <line x1="160" y1="485" x2="160" y2="550" stroke="#10b981" stroke-width="2" marker-end="url(#wsArrow)"/>
+  </g>
+
+  <!-- Right Side: Packet Transmission Structure -->
+  <g transform="translate(730, 95)" filter="url(#shadow7)">
+    <rect width="430" height="660" rx="10" fill="url(#cardGrad7)" stroke="#38bdf8" stroke-width="1.5"/>
+    <rect x="0" y="0" width="430" height="30" rx="10" fill="#0369a1"/>
+    <rect x="0" y="20" width="430" height="10" fill="#0369a1"/>
+    <text x="20" y="20" font-family="monospace" font-size="12" font-weight="bold" fill="#e0f2fe">JSON FRAME TRANSMISSION STRUCTURE</text>
+
+    <!-- JSON Frame Card -->
+    <g transform="translate(20, 50)">
+      <rect width="390" height="230" rx="8" fill="#0f172a" stroke="#0284c7" stroke-width="1"/>
+      <text x="20" y="30" font-family="monospace" font-size="12" font-weight="bold" fill="#38bdf8">WebSocket JSON Payload Frame</text>
+      <text x="20" y="55" font-family="monospace" font-size="11" fill="#cbd5e1">{</text>
+      <text x="35" y="75" font-family="monospace" font-size="11" fill="#93c5fd">"deployment_id":</text> <text x="175" y="75" font-family="monospace" font-size="11" fill="#a7f3d0">"d9a8-uuid-4",</text>
+      <text x="35" y="95" font-family="monospace" font-size="11" fill="#93c5fd">"stage":</text> <text x="110" y="95" font-family="monospace" font-size="11" fill="#facc15">"BUILD",</text>
+      <text x="35" y="115" font-family="monospace" font-size="11" fill="#93c5fd">"level":</text> <text x="110" y="115" font-family="monospace" font-size="11" fill="#34d399">"INFO",</text>
+      <text x="35" y="135" font-family="monospace" font-size="11" fill="#93c5fd">"message":</text> <text x="125" y="135" font-family="monospace" font-size="11" fill="#f8fafc">"[STAGE 4/6] Compiling...",</text>
+      <text x="35" y="155" font-family="monospace" font-size="11" fill="#93c5fd">"timestamp":</text> <text x="145" y="155" font-family="monospace" font-size="11" fill="#fca5a5">"2026-11-06T14:22:01Z",</text>
+      <text x="35" y="175" font-family="monospace" font-size="11" fill="#93c5fd">"is_complete":</text> <text x="165" y="175" font-family="monospace" font-size="11" fill="#facc15">false</text>
+      <text x="20" y="195" font-family="monospace" font-size="11" fill="#cbd5e1">}</text>
+    </g>
+
+    <!-- Client-Side Circular Buffer Architecture -->
+    <g transform="translate(20, 300)">
+      <rect width="390" height="330" rx="8" fill="#0f172a" stroke="#10b981" stroke-width="1"/>
+      <text x="20" y="30" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="13" font-weight="bold" fill="#34d399">Client-Side LiveConsole Architecture</text>
+
+      <text x="20" y="60" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#cbd5e1">• Circular Memory Buffer (Max 1,000 Lines):</text>
+      <text x="30" y="80" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#94a3b8">Prevents DOM bloat and layout thrashing during</text>
+      <text x="30" y="96" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#94a3b8">heavy compiler build traces.</text>
+
+      <text x="20" y="125" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#cbd5e1">• Intelligent Auto-Scroll Lock:</text>
+      <text x="30" y="145" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#94a3b8">Auto-scrolls to bottom by default. If the user</text>
+      <text x="30" y="161" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#94a3b8">scrolls up to read an error, auto-scroll pauses</text>
+      <text x="30" y="177" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#94a3b8">and displays a 'Resume Auto-Scroll' pill.</text>
+
+      <text x="20" y="210" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="11" fill="#cbd5e1">• ANSI Color Parsing:</text>
+      <text x="30" y="230" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="10" fill="#94a3b8">Colorizes logs based on severity:</text>
+      <text x="30" y="248" font-family="monospace" font-size="10" fill="#34d399">  [SUCCESS] Green  |  [INFO] Blue</text>
+      <text x="30" y="264" font-family="monospace" font-size="10" fill="#fbbf24">  [WARN] Amber     |  [ERROR] Red</text>
+
+      <text x="20" y="295" font-family="monospace" font-size="10" fill="#38bdf8">One-Click Copy &amp; Log Download Supported</text>
+    </g>
+  </g>
+</svg>
