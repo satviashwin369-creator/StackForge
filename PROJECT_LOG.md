@@ -774,7 +774,7 @@ Frontend CI (`npm run lint`, `npx tsc --noEmit`, `npm run build`).
 3. **Backend API:** Port 8000 returned HTTP 200 on `/health`, `/docs` (OpenAPI Swagger), and `/metrics`.
 4. **PostgreSQL & Redis:** Healthy container status. Relational tables initialized; Redis broker and Pub/Sub bus operational.
 5. **Celery Background Worker:** Connected to `redis://redis:6379/1`, registered task `stackforge.run_deployment`.
-6. **Authentication:** Demo login (`demo@stackforge.io`), `/auth/me`, and dynamic user registration (`/auth/register`) validated with real JWT bearer tokens.
+6. **Authentication:** User login, `/auth/me`, and dynamic user registration (`/auth/register`) validated with real JWT bearer tokens.
 7. **Project Management:** Full CRUD operations validated (List 3 seeded projects, Create new project, Delete test project).
 8. **Deployment Pipeline & Celery Execution:** Deployment queued and transitioned from `queued` to `deploying`. Celery worker generated 4 live log lines into the database.
 9. **WebSocket Logs:** Unauthenticated request rejected with HTTP 403; Authenticated handshake returned HTTP 101 Switching Protocols.

@@ -14,7 +14,7 @@ from app.services.log_service import LogService
 from app.models.log import LogLevel
 
 
-DEMO_EMAIL = os.getenv("DEMO_USER_EMAIL", "demo@stackforge.io")
+DEMO_EMAIL = os.getenv("DEMO_USER_EMAIL", "developer@example.com")
 DEMO_PASSWORD = os.getenv("DEMO_USER_PASSWORD") or secrets.token_urlsafe(16)
 
 

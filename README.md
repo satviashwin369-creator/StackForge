@@ -196,17 +196,14 @@ docker compose ps
 All core containers should report `healthy` or `running`.
 
 ### 5. Access Platform Portals
-| Portal | URL | Default Credentials / Purpose |
+| Portal | URL | Description / Purpose |
 |---|---|---|
-| **StackForge Web Dashboard** | `http://localhost:3000` | Authentication portal: Sign Up with your email or log in |
+| **StackForge Web Dashboard** | `http://localhost:3000` | Authentication portal: Sign Up or Log In |
 | **FastAPI Interactive Swagger** | `http://localhost:8000/docs` | OpenAPI documentation & interactive API playground |
 | **Backend Health Endpoint** | `http://localhost:8000/health` | Service probe: returns `{"status": "ok"}` |
 | **Prometheus Metrics** | `http://localhost:8000/metrics` | Raw Prometheus exposition format |
 | **Prometheus Dashboard** | `http://localhost:9090` | Targets status: `http://localhost:9090/targets` |
 | **Grafana UI** | `http://localhost:3001` | Pre-provisioned `StackForge Platform Overview` dashboard |
-
-> [!NOTE]
-> New users can register immediately via the web interface. For automated setups or testing, credentials can be configured via environment variables (`DEMO_USER_EMAIL` and `DEMO_USER_PASSWORD`). Production deployments should configure custom `JWT_SECRET_KEY` values via environment variables.
 
 ### 6. Safe Shutdown (Preserve Data)
 ```bash
