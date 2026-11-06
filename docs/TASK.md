@@ -1,6 +1,6 @@
 # StackForge — Work Breakdown Structure & Milestone History (`TASK.md`)
 
-> **Document Classification:** Engineering Project Management, Milestone Audit & Roadmap  
+> **Document Classification:** Engineering Project Management & Implementation Plan  
 > **Status:** Active Tracking Document  
 > **Target Audience:** Engineering Leads, DevOps Architects, Technical Interview Panels  
 > **Repository:** `satviashwin369-creator/stackforge`  
@@ -34,7 +34,7 @@ flowchart TD
         D5["- PR #1 Merged (commit 0f048ea)<br/>- GitHub Actions Matrix CI (Run #42196587155)<br/>- GHCR images published & K8s manifests"]
     end
 
-    subgraph P6 ["Phase 6: Future Roadmap (PLANNED)"]
+    subgraph P6 ["Phase 6+: Planned Extensions (FUTURE)"]
         D6["- Dynamic K8s Pod Runner (Kaniko/BuildKit)<br/>- Argo CD GitOps Application CRDs<br/>- AWS Terraform VPC/EKS/RDS module"]
     end
 
@@ -160,7 +160,7 @@ To maintain complete transparency for technical interviews, the following table 
 
 ---
 
-## 5. Future Roadmap & Milestones (Phase 6+)
+## 5. Planned Engineering Extensions (Phase 6+)
 
 ### Phase 6: Dynamic Kubernetes Pod Runner
 - **Goal:** Replace `deployment_simulator.py` with real Kubernetes Pod execution.

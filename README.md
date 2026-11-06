@@ -198,15 +198,15 @@ All core containers should report `healthy` or `running`.
 ### 5. Access Platform Portals
 | Portal | URL | Default Credentials / Purpose |
 |---|---|---|
-| **StackForge Web Dashboard** | `http://localhost:3000` | Sign Up a new user, or use demo account: `demo@stackforge.io` / `StackForge123!` *(local development only)* |
+| **StackForge Web Dashboard** | `http://localhost:3000` | Authentication portal: Sign Up with your email or log in |
 | **FastAPI Interactive Swagger** | `http://localhost:8000/docs` | OpenAPI documentation & interactive API playground |
 | **Backend Health Endpoint** | `http://localhost:8000/health` | Service probe: returns `{"status": "ok"}` |
 | **Prometheus Metrics** | `http://localhost:8000/metrics` | Raw Prometheus exposition format |
 | **Prometheus Dashboard** | `http://localhost:9090` | Targets status: `http://localhost:9090/targets` |
 | **Grafana UI** | `http://localhost:3001` | Pre-provisioned `StackForge Platform Overview` dashboard |
 
-> [!WARNING]
-> The seeded demo credentials (`demo@stackforge.io` / `StackForge123!`) are strictly intended for local development and demonstration testing. Never use these credentials in a production environment. All production deployments must configure unique user credentials and custom `JWT_SECRET_KEY` values via environment variables.
+> [!NOTE]
+> New users can register immediately via the web interface. For automated setups or testing, credentials can be configured via environment variables (`DEMO_USER_EMAIL` and `DEMO_USER_PASSWORD`). Production deployments should configure custom `JWT_SECRET_KEY` values via environment variables.
 
 ### 6. Safe Shutdown (Preserve Data)
 ```bash
@@ -338,14 +338,3 @@ To maximize impact on GitHub and during technical interviews, capture and add th
 3. `project-catalog.png`: Project management view showing registered microservices and repository links.
 4. `grafana-dashboard.png`: Pre-provisioned Grafana `StackForge Platform Overview` displaying live Prometheus scrape metrics.
 
----
-
-## 🗺️ Roadmap & Milestone Status
-
-- [x] **Milestone 1–4:** Frontend & Backend Authentication, Session Persistence, Route Guards
-- [x] **Milestone 5:** Live Dashboard APIs & Real-Time Metrics
-- [x] **Milestone 6:** Project Management with PostgreSQL Persistence
-- [x] **Milestone 7:** 6-Stage Deployment Pipeline with Celery Dispatch & Fallback
-- [x] **Milestone 8:** Observability Stack (Prometheus Scraper, Auto-Provisioned Grafana, Optional Loki Profile)
-- [x] **Milestone 9:** DevOps Hardening (Automated Test Suite, ESLint Zero Errors, Immutable CI Tagging, K8s Manifests)
-- [ ] **Milestone 10 (Future Exploration):** Argo CD GitOps operator integration & live cloud deployment

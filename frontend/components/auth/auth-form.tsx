@@ -38,11 +38,8 @@ export function AuthForm({ mode }: AuthFormProps) {
     setSocialLoading(provider);
     setError(null);
     try {
-      // Try logging in as demo user
-      await login("demo@stackforge.io", "StackForge123!");
-    } catch {
-      // Fallback local auth state
-      setAuthToken("demo-token-123");
+      // Local development mock session
+      setAuthToken("demo-session-token");
 
       useAuthStore.setState({
         user: {
@@ -68,8 +65,8 @@ export function AuthForm({ mode }: AuthFormProps) {
     setLoading(true);
 
     const form = new FormData(e.currentTarget);
-    const email = String(form.get("email") ?? "demo@stackforge.io");
-    const password = String(form.get("password") ?? "StackForge123!");
+    const email = String(form.get("email") ?? "").trim();
+    const password = String(form.get("password") ?? "");
     const full_name = String(form.get("name") ?? "DevOps Engineer");
 
     // Signup: validate passwords match
@@ -90,9 +87,9 @@ export function AuthForm({ mode }: AuthFormProps) {
       }
       router.push("/dashboard");
     } catch (err) {
-      // If API error or backend offline, gracefully fall back to demo sign-in
+      // If API error or backend offline, inform user cleanly
       if (err instanceof ApiClientError && err.payload.status === 401) {
-        setError("Invalid credentials. Try demo@stackforge.io / StackForge123!");
+        setError("Invalid email or password. Please try again or create an account.");
         setLoading(false);
         return;
       }
@@ -203,8 +200,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                 id="email"
                 name="email"
                 type="email"
-                placeholder="demo@stackforge.io"
-                defaultValue="demo@stackforge.io"
+                placeholder="name@company.com"
                 autoComplete="email"
                 required
               />
@@ -234,7 +230,6 @@ export function AuthForm({ mode }: AuthFormProps) {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  defaultValue="StackForge123!"
                   autoComplete={isLogin ? "current-password" : "new-password"}
                   required
                   className="pr-10"
@@ -264,7 +259,6 @@ export function AuthForm({ mode }: AuthFormProps) {
                     name="confirm"
                     type={showConfirm ? "text" : "password"}
                     placeholder="Re-enter your password"
-                    defaultValue="StackForge123!"
                     autoComplete="new-password"
                     required
                     className="pr-10"
@@ -427,7 +421,7 @@ export function AuthForm({ mode }: AuthFormProps) {
                     <Input
                       id="reset-email"
                       type="email"
-                      placeholder="demo@stackforge.io"
+                      placeholder="name@company.com"
                       value={resetEmail}
                       onChange={(e) => setResetEmail(e.target.value)}
                       required

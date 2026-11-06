@@ -104,7 +104,7 @@ flowchart TD
 - **FR-1.1:** The system shall support user registration (`POST /api/v1/auth/register`) and user authentication (`POST /api/v1/auth/login`) using Passlib bcrypt password hashing.
 - **FR-1.2:** The backend shall sign and issue cryptographically verifiable JSON Web Tokens (JWT) using HMAC-SHA256 with configurable expiry.
 - **FR-1.3:** The frontend shall persist user session state via Zustand client storage with automatic cookie hydration and Next.js route protection (`/dashboard/*`).
-- **FR-1.4:** The system shall seed a default deterministic developer account (`demo@stackforge.io` / `StackForge123!`) on clean database boot.
+- **FR-1.4:** The system shall support automated seeding of initial developer credentials via configured environment variables (`DEMO_USER_EMAIL` and `DEMO_USER_PASSWORD`) or on-demand signup via the authentication portal.
 
 ### FR-2: Microservice Project Catalog & Lifecycle Management (CRUD)
 - **FR-2.1:** Authenticated users shall be able to list, inspect, create, update, and delete microservice projects (`/api/v1/projects`).

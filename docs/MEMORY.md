@@ -42,23 +42,23 @@ StackForge orchestrates 9 dedicated containers locally via Docker Compose. All s
 ## 3. Verified Credentials & Local Accounts
 
 > [!NOTE]
-> The credentials below are pre-configured for local developer demonstration and testing environments.
+> All credentials and secrets are externalized to environment variables (`.env`). No sensitive credentials are committed to version control.
 
 ### 3.1 Application Test Account
 - **Web URL:** `http://localhost:3000/login`
-- **Email:** `demo@stackforge.io`
-- **Password:** `StackForge123!`
+- **Email:** Configured via `DEMO_USER_EMAIL` in `.env` (or create a new account via `/register`)
+- **Password:** Configured via `DEMO_USER_PASSWORD` in `.env`
 - **Role:** Administrator / Project Owner
 - **Preloaded Data:** Auto-seeded demo projects and historical deployment runs.
 
 ### 3.2 Grafana Monitoring Dashboard
 - **Web URL:** `http://localhost:3001`
 - **Username:** `admin`
-- **Password:** `admin` *(Verified & reset via `grafana-cli`)*
+- **Password:** Configured via `GF_SECURITY_ADMIN_PASSWORD` in `.env` or set during initial local container provisioning
 - **Provisioned Dashboards:** StackForge Application Telemetry, Request Latency, Celery Pipeline Throughput.
 
 ### 3.3 Database & Message Broker Connections (Internal Docker Network)
-- **PostgreSQL Database:** `postgresql://postgres:postgres@db:5432/stackforge`
+- **PostgreSQL Database:** `postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}`
 - **Redis Broker / PubSub:** `redis://redis:6379/0`
 - **Prometheus Scrape Target:** `backend:8000/metrics`
 

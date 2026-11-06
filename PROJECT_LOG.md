@@ -802,6 +802,6 @@ Frontend CI (`npm run lint`, `npx tsc --noEmit`, `npm run build`).
    - Synchronized current branch and HEAD commit (`e04fd2c`).
    - Appended Phase E1.3, E2, E2.1, Task 1, Task 2, and Task 3 records.
    - Updated Milestone Status Summary table and Next Task section.
-3. **docs/Roadmap.md & docs/Deployment.md:**
-   - Aligned roadmap milestone statuses.
+3. **Documentation Streamlining:**
+   - Consolidated legacy deployment notes into unified core engineering specifications.
    - Documented resource ownership boundary between Kubernetes manifests and Terraform.
