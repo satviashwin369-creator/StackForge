@@ -84,6 +84,41 @@ The typography hierarchy balances human legibility for navigation with technical
 
 StackForge organizes its frontend UI into modular, reusable components using the Atomic Design model:
 
+```mermaid
+flowchart TD
+    subgraph Atoms ["1. Atoms (Base UI & Primitives)"]
+        A1["Button"]
+        A2["StatusBadge (pulsing dot)"]
+        A3["MetricGauge"]
+        A4["Input / Dropdown"]
+        A5["Lucide React Icons"]
+    end
+
+    subgraph Molecules ["2. Molecules (Composite Widgets)"]
+        M1["StatCard (KPI + trend + sparkline)"]
+        M2["ProjectCard (Repo + branch + actions)"]
+        M3["NodeMetricSlider"]
+        M4["TerminalControls (Copy, Auto-scroll)"]
+    end
+
+    subgraph Organisms ["3. Organisms (Complex Subsystems)"]
+        O1["PipelineStageTimeline (6-stage stepper)"]
+        O2["ClusterTopologyGrid (Multi-node health)"]
+        O3["LiveConsole (Virtual DOM circular buffer)"]
+        O4["RechartsTelemetry (Area & Bar charts)"]
+    end
+
+    subgraph Templates ["4. Layouts & Templates"]
+        T1["Sidebar (Desktop 256px / Collapsible)"]
+        T2["Header (Profile, cluster status pulse)"]
+        T3["DashboardShell ((dashboard) Route Group)"]
+    end
+
+    Atoms --> Molecules
+    Molecules --> Organisms
+    Organisms --> Templates
+```
+
 ```
 frontend/
 ├── components/
@@ -185,3 +220,4 @@ StackForge provides a responsive dashboard layout adapted to different screen fo
 - **Keyboard Navigation:** All interactive elements (buttons, inputs, dropdown items, tabs) are fully navigable via `Tab` and `Shift+Tab`, with clearly visible focus rings (`ring-2 ring-primary ring-offset-2 ring-offset-background`).
 - **Screen Reader Support:** Status badges include screen-reader only labels (`<span className="sr-only">Status: Success</span>`). Interactive icon-only buttons include descriptive `aria-label` attributes.
 - **Reduced Motion:** All CSS animations (pulsing indicators, spinners, transition fades) respect the user's OS-level accessibility preference (`@media (prefers-reduced-motion: reduce)` disables animations).
+

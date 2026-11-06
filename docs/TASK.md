@@ -13,12 +13,36 @@
 StackForge was developed iteratively across five core phases to transform a conceptual cloud orchestration idea into a production-hardened developer platform. Every phase introduced specific architectural layers, automated verification tests, and operational observability infrastructure.
 
 ```mermaid
-flowchart LR
-    P1["Phase 1<br/>Foundation & Scaffold"] --> P2["Phase 2<br/>Core API & Models"]
-    P2 --> P3["Phase 3<br/>Distributed Celery & WS"]
-    P3 --> P4["Phase 4<br/>Full Observability"]
-    P4 --> P5["Phase 5<br/>DevOps & CI/CD Hardening"]
-    P5 -.-> P6["Phase 6 (Roadmap)<br/>Dynamic K8s Runner"]
+flowchart TD
+    subgraph P1 ["Phase 1: Foundation & Scaffold (DONE)"]
+        D1["- Docker Compose (7 core services)<br/>- Next.js 16 App Router & Tailwind v4<br/>- FastAPI 0.115 backend layout"]
+    end
+
+    subgraph P2 ["Phase 2: Core Platform Engine & DB (DONE)"]
+        D2["- PostgreSQL 16 & SQLAlchemy 2.0<br/>- User Auth (Bcrypt work 12 + JWT)<br/>- Project CRUD & Alembic migrations"]
+    end
+
+    subgraph P3 ["Phase 3: Asynchronous Pipeline Engine (DONE)"]
+        D3["- Celery 5.4 worker on Redis 7 broker<br/>- 6-Stage deployment simulator<br/>- WebSocket log streamer + fallback"]
+    end
+
+    subgraph P4 ["Phase 4: Full Observability Stack (DONE)"]
+        D4["- Prometheus 15s scrape on /metrics<br/>- Auto-provisioned Grafana 12 dashboards<br/>- Loki 3.5 & Alloy v1.10 logging profile"]
+    end
+
+    subgraph P5 ["Phase 5: DevOps Hardening & Release (DONE)"]
+        D5["- PR #1 Merged (commit 0f048ea)<br/>- GitHub Actions Matrix CI (Run #42196587155)<br/>- GHCR images published & K8s manifests"]
+    end
+
+    subgraph P6 ["Phase 6: Future Roadmap (PLANNED)"]
+        D6["- Dynamic K8s Pod Runner (Kaniko/BuildKit)<br/>- Argo CD GitOps Application CRDs<br/>- AWS Terraform VPC/EKS/RDS module"]
+    end
+
+    P1 --> P2
+    P2 --> P3
+    P3 --> P4
+    P4 --> P5
+    P5 -.-> P6
 ```
 
 ---
@@ -156,3 +180,4 @@ To maintain complete transparency for technical interviews, the following table 
   - Amazon RDS PostgreSQL Multi-AZ instance.
   - Amazon ElastiCache for Redis cluster.
   - Application Load Balancer (ALB) with AWS Certificate Manager (ACM) TLS termination.
+

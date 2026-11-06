@@ -76,6 +76,14 @@ StackForge enforces a strict three-tier architecture:
 2. **Services (`app/services/`):** Pure business logic (e.g., triggering deployments, computing infrastructure telemetry, managing WebSocket connections).
 3. **Database Access / CRUD (`app/crud/` & `app/models/`):** Reusable queries and persistence interactions.
 
+```mermaid
+flowchart TD
+    Client["HTTP Client Request (JSON Body + Bearer JWT)"] --> Route["1. API Router Layer (app/api/v1/)<br/>- Pydantic payload validation<br/>- Depends(get_current_user) auth guard"]
+    Route --> Service["2. Domain Service Layer (app/services/)<br/>- Business rules & orchestration<br/>- Celery task dispatch<br/>- WebSocket state coordination"]
+    Service --> CRUD["3. Data Access & Model Layer (app/models/)<br/>- SQLAlchemy 2.0 select() queries<br/>- Unit-of-Work transaction commit"]
+    CRUD --> DB[("PostgreSQL 16 Database<br/>ACID Transactions")]
+```
+
 ```python
 # Standard Route Handler Pattern
 @router.post("/", response_model=ProjectResponse, status_code=status.HTTP_201_CREATED)
@@ -143,6 +151,15 @@ async def create_project(
 ---
 
 ## 4. Git Workflow & Version Control Discipline
+
+```mermaid
+flowchart LR
+    Dev["Developer Branch<br/>(feature/*, fix/*)"] --> PR["Pull Request to main<br/>(PR #1 Baseline)"]
+    PR --> CI["GitHub Actions CI Matrix<br/>- Frontend Lint & Build<br/>- Backend Pytest (SQLite)<br/>- Docker Image Build"]
+    CI --> Review["Code Review & Approval<br/>- Branch Protection Gate"]
+    Review --> Merge["Merge to main<br/>(Fast-Forward / Squash)"]
+    Merge --> Publish["Automated Release<br/>- Publish GHCR :latest<br/>- Tag Commit SHA"]
+```
 
 ### 4.1 Commit Message Specification (Conventional Commits)
 All commit messages must follow the Conventional Commits 1.0 specification:
@@ -240,3 +257,4 @@ All commits must be made using the verified author credentials to preserve Git a
 - All application logging must use `structlog` or standard Python `logging` formatted as JSON in production.
 - Logs must include trace context: `request_id`, `user_id`, `project_id`, `deployment_id`.
 - Sensitive tokens, credentials, and passwords must be automatically redacted before writing to log streams.
+

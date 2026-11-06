@@ -81,6 +81,25 @@ flowchart LR
 
 ## 5. Functional Requirements (FRs)
 
+```mermaid
+flowchart TD
+    subgraph CoreCapabilities ["StackForge Functional Capability Tree"]
+        Auth["1. Auth & Identity<br/>- Bcrypt work factor 12<br/>- JWT Bearer Token (HS256)<br/>- Zustand Client Session"]
+        Catalog["2. Microservice Catalog<br/>- Multi-framework support<br/>- Git repo & branch targeting<br/>- Cascade deletion integrity"]
+        Orchestration["3. Pipeline Orchestration<br/>- Asynchronous Celery offload<br/>- 6-Stage delivery lifecycle<br/>- In-process fallback execution"]
+        Streaming["4. Real-Time Telemetry<br/>- Sub-10ms WebSocket logs<br/>- Redis Pub/Sub broadcasting<br/>- Polling fallback resilience"]
+        Fleet["5. Fleet Monitoring<br/>- Multi-node CPU/RAM tracking<br/>- Cluster KPI aggregations<br/>- 30-day uptime calculations"]
+        Observability["6. Full Observability<br/>- Prometheus /metrics export<br/>- Auto-provisioned Grafana<br/>- Optional Loki/Alloy logging"]
+    end
+
+    User(["Developer / Recruiter"]) --> Auth
+    Auth --> Catalog
+    Catalog --> Orchestration
+    Orchestration --> Streaming
+    Orchestration --> Fleet
+    Fleet --> Observability
+```
+
 ### FR-1: Authentication, Authorization & Session Governance
 - **FR-1.1:** The system shall support user registration (`POST /api/v1/auth/register`) and user authentication (`POST /api/v1/auth/login`) using Passlib bcrypt password hashing.
 - **FR-1.2:** The backend shall sign and issue cryptographically verifiable JSON Web Tokens (JWT) using HMAC-SHA256 with configurable expiry.
@@ -153,3 +172,4 @@ StackForge Version 1.0.0 is declared **Production Ready for Portfolio Presentati
 2. **Local Runtime Validation:** All 9 containers healthy and functional via Docker Compose with zero port collisions.
 3. **Clean Git Release:** All 16 feature and hardening commits merged into `main` via Pull Request #1 with clean working tree.
 4. **Verified Container Registry:** Production images published and tagged on GitHub Container Registry (`ghcr.io/satviashwin369-creator/*`).
+

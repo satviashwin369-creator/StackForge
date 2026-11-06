@@ -98,16 +98,17 @@ flowchart TD
 
 ## 📚 Engineering Documentation Suite
 
-StackForge includes a complete suite of six industry-standard engineering documents located in `docs/`:
+StackForge includes a complete suite of industry-standard engineering documents and an interactive visual architecture viewer located in `docs/`:
 
 | Document | Purpose & Scope | Target Audience |
 | :--- | :--- | :--- |
-| [**`docs/PRD.md`**](docs/PRD.md) | **Product Requirements Document:** Vision, core personas, functional/non-functional requirements, and simulated vs real boundaries. | Product Leads & Engineering Managers |
-| [**`docs/Architecture.md`**](docs/Architecture.md) | **System Architecture (HLD & LLD):** C4 diagrams, Deploy Packet lifecycle, WebSocket protocol, database ER model, and design trade-offs. | System Architects & Senior Engineers |
-| [**`docs/RULES.md`**](docs/RULES.md) | **Engineering Standards & Conventions:** 12-factor principles, Pydantic/SQLAlchemy standards, strict TypeScript, Git discipline, and security rules. | Core Contributors & Code Reviewers |
-| [**`docs/DESIGN.md`**](docs/DESIGN.md) | **UI/UX Design System:** Developer cockpit aesthetic, OKLCH color tokens, typography, atomic components, and live terminal architecture. | Frontend Engineers & UI Designers |
-| [**`docs/TASK.md`**](docs/TASK.md) | **Work Breakdown Structure & Milestones:** Chronological history from Phase 1 through Phase 5, PR #1 audit record, and future roadmap. | Project Leads & DevOps Engineers |
-| [**`docs/MEMORY.md`**](docs/MEMORY.md) | **Runtime State & Interview Study Guide:** Active container registry, local credentials, 30s elevator pitch, and top 5 senior interview Q&As. | Technical Interview Prep & DevOps SREs |
+| [**`docs/ARCHITECTURE_DIAGRAMS.html`**](docs/ARCHITECTURE_DIAGRAMS.html) | **Interactive Architecture Visualizer:** Standalone visual browser dashboard rendering interactive, zoomable HLD, LLD, K8s, Docker, and Sequence diagrams. | System Architects, Visual Learners & Interview Panels |
+| [**`docs/PRD.md`**](docs/PRD.md) | **Product Requirements Document:** Vision, personas, functional capability tree, non-functional requirements, and simulated vs real boundaries. | Product Leads & Engineering Managers |
+| [**`docs/Architecture.md`**](docs/Architecture.md) | **System Architecture (HLD & LLD):** 10 detailed diagrams (C4, HLD blueprint, LLD classes, Deploy Packet sequence, Docker network, K8s cluster, ERD, and Telemetry). | System Architects & Senior Engineers |
+| [**`docs/RULES.md`**](docs/RULES.md) | **Engineering Standards & Conventions:** 12-factor principles, 3-tier layering diagram, Pydantic/SQLAlchemy standards, strict TypeScript, and CI PR gates. | Core Contributors & Code Reviewers |
+| [**`docs/DESIGN.md`**](docs/DESIGN.md) | **UI/UX Design System:** Developer cockpit aesthetic, OKLCH tokens, atomic component hierarchy tree, and live terminal memory buffer architecture. | Frontend Engineers & UI Designers |
+| [**`docs/TASK.md`**](docs/TASK.md) | **Work Breakdown Structure & Milestones:** Visual phase dependency flowchart, chronological history from Phase 1 to Phase 5, and PR #1 audit record. | Project Leads & DevOps Engineers |
+| [**`docs/MEMORY.md`**](docs/MEMORY.md) | **Runtime State & Interview Study Guide:** Whiteboard interview diagram, active container registry, local credentials, 30s elevator pitch, and top 5 senior interview Q&As. | Technical Interview Prep & DevOps SREs |
 
 ---
 

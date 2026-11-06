@@ -88,28 +88,18 @@ Use this section to prepare for senior platform, software engineering, or DevOps
 ### 5.2 Whiteboard Architecture Walkthrough (The "Deploy Packet" Lifecycle)
 When the interviewer asks: *"Walk me through what happens when a developer clicks 'Deploy':"*
 
-```
-[User Browser]
-      | 1. POST /api/v1/projects/{id}/deploy (Bearer JWT)
-      v
-[FastAPI Router]
-      | 2. Validates JWT, inserts 'QUEUED' record in PostgreSQL
-      | 3. Celery delay(deployment_id) -> pushes job to Redis queue
-      | 4. Returns 202 Accepted immediately (< 50ms)
-      v
-[Celery Worker Pool]
-      | 5. Pops job from Redis queue, transitions status to 'BUILDING'
-      | 6. Executes 6 stages: CLONE -> INSTALL -> LINT -> BUILD -> PUSH -> DEPLOY
-      | 7. Publishes log chunks to Redis Pub/Sub: 'deployments:{id}:logs'
-      v
-[Redis Pub/Sub Channel]
-      | 8. Log chunk picked up by FastAPI WebSocket listener
-      v
-[FastAPI WebSocket Gateway]
-      | 9. Streams JSON frame over persistent WS connection
-      v
-[Browser Terminal UI]
-      | 10. Parses log frame, renders ANSI color line, auto-scrolls terminal
+```mermaid
+flowchart TD
+    Browser["1. Browser Client<br/>POST /deploy (Bearer JWT)"] -->|"HTTP 202 Accepted (< 50ms)"| API["2. FastAPI Gateway (:8000)<br/>- Validates JWT<br/>- Inserts QUEUED record"]
+    API -->|"Persists initial state"| DB[("PostgreSQL 16 (:5432)<br/>deployments table")]
+    API -->|"delay() Task Envelope"| RedisQ[("Redis 7 Queue (:6379)<br/>LPUSH celery")]
+    
+    RedisQ -->|"BRPOP (Stateless Claim)"| Worker["3. Celery Worker Pool<br/>- Transitions to BUILDING<br/>- Runs 6 Pipeline Stages"]
+    Worker -->|"Updates final status & logs"| DB
+    Worker -->|"PUBLISH log chunks"| RedisPubSub[("Redis Pub/Sub Channel<br/>deployments:{id}:logs")]
+    
+    Browser <-->|"4. Authenticated TCP Stream<br/>ws://backend/ws/logs?token=JWT"| WS["5. FastAPI WebSocket Server"]
+    WS <-->|"SUBSCRIBE"| RedisPubSub
 ```
 
 ---
@@ -162,3 +152,4 @@ When the interviewer asks: *"Walk me through what happens when a developer click
 > 2. When a deployment triggers, Celery calls `client.CoreV1Api().create_namespaced_pod()`, spawning an ephemeral Pod running a rootless container builder like **Google Kaniko** or **BuildKit**.
 > 3. Kaniko clones the repo from Git, builds the container image inside the cluster without requiring a Docker daemon, and pushes it to GHCR or Amazon ECR.
 > 4. We stream the container's stdout logs in real-time via `CoreV1Api().read_namespaced_pod_log(follow=True, _preload_content=False)` directly into our existing Redis Pub/Sub pipeline."*
+
