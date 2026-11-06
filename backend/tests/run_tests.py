@@ -65,10 +65,11 @@ class StackForgeBackendTestSuite(unittest.TestCase):
 
     # --- Auth Tests ---
     def test_auth_register_success(self):
-        ta.test_register_user_success(self.client)
+        ta.test_register_success(self.client)
 
-    def test_auth_register_duplicate_fails(self):
-        ta.test_register_duplicate_email_fails(self.client)
+    def test_auth_register_duplicate_email(self):
+        user = test_user(self.db)
+        ta.test_register_duplicate_email(self.client, user)
 
     def test_auth_login_success(self):
         user = test_user(self.db)
@@ -78,31 +79,42 @@ class StackForgeBackendTestSuite(unittest.TestCase):
         user = test_user(self.db)
         ta.test_login_invalid_password(self.client, user)
 
-    def test_auth_get_current_user_me(self):
+    def test_auth_login_nonexistent_user(self):
+        ta.test_login_nonexistent_user(self.client)
+
+    def test_auth_me_authenticated(self):
         user = test_user(self.db)
         headers = auth_headers(self.client, user)
-        ta.test_get_current_user_me(self.client, user, headers)
+        ta.test_me_authenticated(self.client, headers, user)
+
+    def test_auth_me_unauthenticated(self):
+        ta.test_me_unauthenticated(self.client)
 
     # --- Project Tests ---
-    def test_projects_create_success(self):
+    def test_projects_create(self):
         user = test_user(self.db)
         headers = auth_headers(self.client, user)
-        tp.test_create_project_success(self.client, headers)
+        tp.test_create_project(self.client, headers)
 
     def test_projects_list(self):
         user = test_user(self.db)
         headers = auth_headers(self.client, user)
         tp.test_list_projects(self.client, headers)
 
-    def test_projects_crud_lifecycle(self):
+    def test_projects_get_by_id(self):
         user = test_user(self.db)
         headers = auth_headers(self.client, user)
-        tp.test_project_crud_lifecycle(self.client, headers)
+        tp.test_get_project_by_id(self.client, headers)
 
-    def test_projects_user_isolation(self):
+    def test_projects_update(self):
         user = test_user(self.db)
         headers = auth_headers(self.client, user)
-        tp.test_user_cannot_access_other_user_project(self.client, self.db, headers)
+        tp.test_update_project(self.client, headers)
+
+    def test_projects_delete(self):
+        user = test_user(self.db)
+        headers = auth_headers(self.client, user)
+        tp.test_delete_project(self.client, headers)
 
     # --- Infra / Telemetry Tests ---
     def test_infra_health(self):
