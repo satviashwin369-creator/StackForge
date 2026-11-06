@@ -29,8 +29,16 @@ STATUS_KEY = "infra:status"
 
 
 class InfraService:
+    """Service providing infrastructure metrics and node statuses.
+    
+    Note: Node statuses and aggregate timeseries metrics are modeled as simulated 
+    cluster telemetry for portfolio demonstrations. Real host metrics for the API
+    itself are exported via the Prometheus /metrics endpoint.
+    """
+
     @staticmethod
     def _mock_servers() -> list[ServerStatusRead]:
+        """Simulated microservice cluster fleet for platform telemetry view."""
         return [
             ServerStatusRead(
                 id="srv-001",

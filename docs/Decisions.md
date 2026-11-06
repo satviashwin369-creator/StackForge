@@ -19,3 +19,18 @@
 - **Status:** Accepted
 - **Context:** All Docker container logs must be ingested into Loki with per-service labels without requiring container agents inside each service image.
 - **Decision:** Deploy Grafana Alloy v1.10.2 mounting `/var/run/docker.sock` and `/var/lib/docker/containers`. Use `discovery.relabel` to dynamically map `__meta_docker_container_label_com_docker_compose_service` to `service_name`, avoiding hardcoded static labels and enabling zero-configuration logging for all compose services.
+
+## ADR 005: Compose Profile Isolation for Advanced Observability
+- **Status:** Accepted
+- **Context:** Mounting `/var/run/docker.sock` and `/var/lib/docker/containers` in Grafana Alloy and Loki causes permission errors, pipe failures, and heavy overhead on Windows / Docker Desktop environments when only core IDP features are needed.
+- **Decision:** Isolate `loki` and `alloy` under Docker Compose `profiles: ["logging"]`. The default `docker compose up -d` launches the 7 core services (`frontend`, `backend`, `worker`, `db`, `redis`, `prometheus`, `grafana`), ensuring instant, failure-free startup. Full log aggregation is accessible on demand via `docker compose --profile logging up -d`.
+
+## ADR 006: Kubernetes Manifests as Primary Local Deployment Owner
+- **Status:** Accepted
+- **Context:** Overlapping resource management between raw Kubernetes manifests in `k8s/` and Terraform's `kubernetes` provider created architectural ambiguity and drift risk in a portfolio project.
+- **Decision:** Establish `k8s/` declarative manifests as the primary, authoritative deployment mechanism for local Kubernetes (Minikube / kind). Retain Terraform configuration in `terraform/` strictly as an optional Infrastructure-as-Code extension for learning and cloud provisioning, avoiding dual-management of the same cluster resources.
+
+## ADR 007: Celery Pipeline Dispatch with In-Process Fallback & Secured WebSockets
+- **Status:** Accepted
+- **Context:** Celery workers may be stopped during lightweight development, causing deployment pipelines to stall. Furthermore, WebSocket streaming endpoints were unauthenticated.
+- **Decision:** In `backend/app/api/routes/deployments.py`, dispatch deployment tasks asynchronously to Celery via `run_deployment_task.delay()`, but gracefully fall back to in-process `BackgroundTasks` if Redis/Celery is unreachable. In `backend/app/api/routes/ws.py`, require valid JWT query parameters (`?token=...`) on WebSocket handshakes to enforce role-based access control.

@@ -84,17 +84,17 @@ resource "kubernetes_deployment" "postgres" {
 
           env {
             name  = "POSTGRES_USER"
-            value = "stackforge"
+            value = var.postgres_user
           }
 
           env {
             name  = "POSTGRES_PASSWORD"
-            value = "stackforge_secret"
+            value = var.postgres_password
           }
 
           env {
             name  = "POSTGRES_DB"
-            value = "stackforge"
+            value = var.postgres_db
           }
 
           volume_mount {
@@ -107,9 +107,9 @@ resource "kubernetes_deployment" "postgres" {
               command = [
                 "pg_isready",
                 "-U",
-                "stackforge",
+                var.postgres_user,
                 "-d",
-                "stackforge"
+                var.postgres_db
               ]
             }
 
@@ -122,9 +122,9 @@ resource "kubernetes_deployment" "postgres" {
               command = [
                 "pg_isready",
                 "-U",
-                "stackforge",
+                var.postgres_user,
                 "-d",
-                "stackforge"
+                var.postgres_db
               ]
             }
 
@@ -301,7 +301,7 @@ resource "kubernetes_deployment" "backend" {
 
           env {
             name  = "DATABASE_URL"
-            value = "postgresql+psycopg2://stackforge:stackforge_secret@db:5432/stackforge"
+            value = "postgresql+psycopg2://${var.postgres_user}:${var.postgres_password}@db:5432/${var.postgres_db}"
           }
 
           env {
@@ -341,7 +341,7 @@ resource "kubernetes_deployment" "backend" {
 
           env {
             name  = "JWT_SECRET_KEY"
-            value = "change-me-to-a-long-random-secret-in-production"
+            value = var.jwt_secret_key
           }
 
           env {
@@ -351,7 +351,7 @@ resource "kubernetes_deployment" "backend" {
 
           env {
             name  = "POSTGRES_DB"
-            value = "stackforge"
+            value = var.postgres_db
           }
 
           env {
@@ -361,12 +361,12 @@ resource "kubernetes_deployment" "backend" {
 
           env {
             name  = "POSTGRES_PASSWORD"
-            value = "stackforge_secret"
+            value = var.postgres_password
           }
 
           env {
             name  = "POSTGRES_USER"
-            value = "stackforge"
+            value = var.postgres_user
           }
 
           readiness_probe {
@@ -574,7 +574,7 @@ resource "kubernetes_deployment" "worker" {
 
           env {
             name  = "DATABASE_URL"
-            value = "postgresql+psycopg2://stackforge:stackforge_secret@db:5432/stackforge"
+            value = "postgresql+psycopg2://${var.postgres_user}:${var.postgres_password}@db:5432/${var.postgres_db}"
           }
 
           env {
@@ -614,7 +614,7 @@ resource "kubernetes_deployment" "worker" {
 
           env {
             name  = "JWT_SECRET_KEY"
-            value = "change-me-to-a-long-random-secret-in-production"
+            value = var.jwt_secret_key
           }
 
           env {
@@ -624,7 +624,7 @@ resource "kubernetes_deployment" "worker" {
 
           env {
             name  = "POSTGRES_DB"
-            value = "stackforge"
+            value = var.postgres_db
           }
 
           env {
@@ -634,12 +634,12 @@ resource "kubernetes_deployment" "worker" {
 
           env {
             name  = "POSTGRES_PASSWORD"
-            value = "stackforge_secret"
+            value = var.postgres_password
           }
 
           env {
             name  = "POSTGRES_USER"
-            value = "stackforge"
+            value = var.postgres_user
           }
         }
       }

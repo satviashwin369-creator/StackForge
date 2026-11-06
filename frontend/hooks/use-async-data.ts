@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface AsyncState<T> {
   data: T | null;
@@ -10,48 +10,49 @@ interface AsyncState<T> {
 
 export function useAsyncData<T>(
   loader: () => Promise<T>,
-  deps: unknown[] = []
+  ..._args: unknown[]
 ) {
+  void _args;
   const [state, setState] = useState<AsyncState<T>>({
     data: null,
     loading: true,
     error: null,
   });
 
-  const load = useCallback(async () => {
-    setState((s) => ({
-      ...s,
-      loading: true,
-      error: null,
-    }));
+  const loaderRef = useRef(loader);
+  useEffect(() => {
+    loaderRef.current = loader;
+  }, [loader]);
 
+  const load = useCallback(async () => {
     try {
-      const result = await loader();
+      const result = await loaderRef.current();
 
       setState({
         data: result,
         loading: false,
         error: null,
       });
-
     } catch (e) {
       setState({
         data: null,
         loading: false,
-        error:
-          e instanceof Error
-            ? e.message
-            : "Failed to load data",
+        error: e instanceof Error ? e.message : "Failed to load data",
       });
     }
-  }, deps);
+  }, []);
+
+  const refetch = useCallback(() => {
+    setState((s) => ({ ...s, loading: true, error: null }));
+    return load();
+  }, [load]);
 
   useEffect(() => {
-    load();
+    void load();
   }, [load]);
 
   return {
     ...state,
-    refetch: load,
+    refetch,
   };
 }

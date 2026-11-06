@@ -13,15 +13,28 @@ spec:
       labels:
         app: backend
     spec:
+      automountServiceAccountToken: false
       containers:
         - name: backend
           image: ghcr.io/satviashwin369-creator/stackforge-backend:latest
           imagePullPolicy: IfNotPresent
+          securityContext:
+            allowPrivilegeEscalation: false
           ports:
             - containerPort: 8000
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
           env:
             - name: DATABASE_URL
-              value: postgresql+psycopg2://stackforge:stackforge_secret@db:5432/stackforge
+              valueFrom:
+                secretKeyRef:
+                  name: stackforge-secrets
+                  key: DATABASE_URL
             - name: REDIS_URL
               value: redis://redis:6379/0
             - name: CELERY_BROKER_URL
@@ -37,7 +50,10 @@ spec:
             - name: ENVIRONMENT
               value: production
             - name: JWT_SECRET_KEY
-              value: change-me-to-a-long-random-secret-in-production
+              valueFrom:
+                secretKeyRef:
+                  name: stackforge-secrets
+                  key: JWT_SECRET_KEY
             - name: PORT
               value: "8000"
             - name: POSTGRES_DB
@@ -45,7 +61,10 @@ spec:
             - name: POSTGRES_HOST
               value: db
             - name: POSTGRES_PASSWORD
-              value: stackforge_secret
+              valueFrom:
+                secretKeyRef:
+                  name: stackforge-secrets
+                  key: POSTGRES_PASSWORD
             - name: POSTGRES_USER
               value: stackforge
           readinessProbe:
