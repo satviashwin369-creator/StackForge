@@ -42,7 +42,13 @@ docker compose ps
 
 # 6. View Consolidated Logs
 docker compose logs -f backend frontend
+
+# 7. Safe Shutdown (Preserve Databases and Persistent Volumes)
+docker compose down
 ```
+
+> [!CAUTION]
+> Never run `docker compose down -v` unless you intentionally wish to permanently delete all PostgreSQL database tables, user records, and Grafana volume data. Always use `docker compose down` for normal shutdown.
 
 ### Health & Endpoint Verification
 - **Frontend Dashboard:** `http://localhost:3000`
@@ -131,7 +137,7 @@ kubectl port-forward svc/backend -n stackforge 8000:8000 &
 The `terraform/` directory contains declarative configurations for deploying StackForge to a Kubernetes cluster using the official HashiCorp Kubernetes provider.
 
 - **Role:** Demonstrates Infrastructure-as-Code modularity, input variable validation, and credential management.
-- **Resource Ownership:** To prevent configuration drift, raw Kubernetes manifests in `k8s/` remain the primary deployment mechanism for local clusters.
+- **Resource Ownership & Dual-Management Warning:** Raw Kubernetes manifests in `k8s/` remain the primary deployment mechanism for local clusters. Because both `k8s/` and `terraform/` manage overlapping Kubernetes resources (namespace, PVC, deployments, services), **do not apply both simultaneously** to avoid ownership conflicts and state drift. Choose either `k8s/` or `terraform/`.
 - **Credential Hardening:** All sensitive parameters (`postgres_password`, `jwt_secret_key`) are declared as `sensitive = true` input variables with no hardcoded defaults.
 - **Safe Local Setup:**
   ```bash

@@ -1,7 +1,7 @@
 # StackForge ⚡
 
-> **Production-Grade Cloud-Native Internal Developer Platform (IDP)**  
-> Inspired by modern DevOps control planes like Portainer, Harness, and GitLab. Built to orchestrate multi-project lifecycles, continuous deployment pipelines, live container log streaming, and deep infrastructure observability.
+> **Portfolio-Grade Cloud-Native Internal Developer Platform (IDP)**
+> Built as a comprehensive DevOps and Cloud Engineering project demonstrating modern containerization, asynchronous pipeline orchestration, infrastructure-as-code, and full-stack observability. Inspired by platforms like Portainer, Harness, and GitLab.
 
 ---
 
@@ -20,35 +20,28 @@
 
 ---
 
-## 📌 Executive Summary & Architecture Status
+## 📌 Project Overview & Purpose
 
-StackForge provides engineering teams with a single pane of glass for managing microservices, executing verifiable multi-stage deployment workflows, inspecting container health in real-time, and diagnosing application telemetry across a unified cloud-native ecosystem.
+StackForge is a student-built Internal Developer Platform (IDP) created to demonstrate practical competencies across the modern Cloud Native and DevOps landscape.
 
-### Current Implementation State:
-- **Phase 1 (Foundation):** ✅ **Complete** — Repository structure, Docker networks, PostgreSQL & Redis topology, Alembic database migrations.
-- **Phase 2 (Authentication):** ✅ **Complete** — Full JWT authentication with bcrypt hashing, `/auth/register`, `/auth/login`, `/auth/me`, Zustand persistent auth store, and Next.js route protection.
-- **Phase 3 (Platform Core & Observability):** ✅ **Complete**
-  - **Dashboard API:** Live KPIs, real-time activity feed, and deployment metrics.
-  - **Projects Management:** Full CRUD operations, health scores, and tech stack catalog.
-  - **Deployments Pipeline:** 6-stage deployment execution (`Source → Build → Test → Security Scan → Deploy → Verify`), Celery asynchronous dispatch with resilient in-process background fallback, and duration calculation.
-  - **Prometheus Telemetry:** Live scraping of FastAPI `/metrics` every 15s collecting HTTP request rates, error ratios, latency histograms, and process memory.
-  - **Grafana Dashboards:** Automatic provisioning of Prometheus datasource and `StackForge Platform Overview` dashboard on container boot (`http://localhost:3001`).
-  - **Optional Log Aggregation:** Grafana Loki and Alloy configured under Compose `profiles: ["logging"]` for zero-overhead default execution.
-- **Phase 4 (DevOps Hardening & Quality Gates):** ✅ **Complete**
-  - **Frontend Quality:** 100% strict TypeScript types and zero ESLint errors.
-  - **Automated Tests:** Unit and integration test suite covering Auth, Projects CRUD, and Infrastructure endpoints with in-memory SQLite isolation.
-  - **CI/CD Pipeline:** GitHub Actions workflow executing lint checks, type checks, backend tests, and multi-service image builds.
-  - **Protected GHCR Publishing:** Immutable commit-SHA image tagging with protected release policy (pushes `:latest` only on trusted `main` branch merges; never from untrusted PRs).
-  - **Kubernetes Manifests:** Namespace isolation, Secret abstraction, Deployments, Services, readiness/liveness probes, and CPU/memory resource limits across all services.
+### The Problem It Addresses
+In microservice architectures, developers often struggle with fragmented tooling: deployment triggers, container health inspections, log tailing, and metrics monitoring frequently require jumping between multiple disconnected dashboards or CLI tools.
+
+StackForge consolidates these operational tasks into a unified control plane:
+- **Developer Self-Service:** Register microservices, inspect environment configurations, and trigger deployment workflows.
+- **Asynchronous Pipeline Execution:** Offload build, test, and deployment jobs to background Celery workers with real-time log streaming.
+- **Integrated Telemetry:** Monitor application performance, HTTP traffic rates, error ratios, and server metrics through unified Prometheus and Grafana dashboards.
 
 ---
 
 ## 🏗️ System Architecture
 
+StackForge employs a microservice-inspired architecture decoupled into clear presentation, API, queuing, storage, and observability layers:
+
 ```mermaid
 flowchart TD
     subgraph Client ["Client Layer"]
-        Browser["User Browser"]
+        Browser["Web Browser"]
     end
 
     subgraph Frontend ["Next.js 16 Frontend (Port 3000)"]
@@ -59,16 +52,16 @@ flowchart TD
     end
 
     subgraph Backend ["FastAPI Backend (Port 8000)"]
-        API["REST API Router"]
-        WS["WebSocket Server (/ws/logs, /ws/deployments)"]
+        API["REST API Router (/api/v1)"]
+        WS["WebSocket Server (/ws/logs/{id})"]
         AuthSvc["JWT Auth Service (bcrypt)"]
-        DepSvc["Deployment Pipeline Runner & Fallback"]
-        MetricsEp["/metrics (Prometheus Client)"]
+        DepSvc["Deployment Pipeline Dispatcher"]
+        MetricsEp["Prometheus Scrape Endpoint (/metrics)"]
     end
 
-    subgraph Async ["Background Tasks"]
+    subgraph Async ["Asynchronous Task Layer"]
         Worker["Celery Worker (app.celery_app)"]
-        Redis[("Redis 7 (Port 6379)\nBroker & Pub/Sub")]
+        Redis[("Redis 7 (Port 6379)\nBroker (db 1) & Results (db 2)")]
     end
 
     subgraph Database ["Persistence Layer"]
@@ -76,40 +69,62 @@ flowchart TD
     end
 
     subgraph CoreObservability ["Core Observability"]
-        Prometheus["Prometheus (Port 9090)\nScrapes Backend :8000/metrics"]
-        Grafana["Grafana 12 (Port 3001)\nAuto-Provisioned Dashboards"]
+        Prometheus["Prometheus (Port 9090)\nScrapes Backend :8000/metrics (15s)"]
+        Grafana["Grafana 12 (Port 3001)\nPre-Provisioned Dashboards"]
     end
 
     subgraph OptionalLogging ["Optional Logging Profile (--profile logging)"]
-        Loki["Loki 3.5 (Port 3100)\nLog Storage (TSDB)"]
-        Alloy["Grafana Alloy v1.10\nDocker Log Discovery"]
+        Loki["Grafana Loki 3.5 (Port 3100)\nLog Storage Engine"]
+        Alloy["Grafana Alloy v1.10\nContainer Log Forwarder"]
     end
 
     Browser --> UI
     UI --> API
-    LogViewer <-->|Authenticated JWT| WS
+    LogViewer <-->|JWT Query Auth| WS
     API --> Postgres
     API --> Redis
     WS <--> Redis
-    API -.->|Async Dispatch| Worker
+    API -.->|Async Task Delay| Worker
     Worker <--> Redis
     Worker --> Postgres
 
-    MetricsEp -->|15s scrape interval| Prometheus
-    Prometheus -->|Default Datasource| Grafana
-    Alloy -.->|Dynamic service_name relabeling| Loki
+    MetricsEp -->|15s scrape| Prometheus
+    Prometheus -->|Datasource| Grafana
+    Alloy -.->|Dynamic service labeling| Loki
     Loki -.->|Optional Datasource| Grafana
 ```
 
 ---
 
+## 🛠️ Technology Stack & Scope Clarifications
+
+| Category | Implemented Technologies | Architecture Scope & Clarifications |
+|---|---|---|
+| **Frontend** | Next.js 16, React 19, TypeScript, Tailwind CSS, Zustand, Lucide Icons, Recharts | Dynamic App Router with route groups separating public auth from protected dashboard pages. |
+| **Backend** | FastAPI, Python 3.12, SQLAlchemy 2.0, Pydantic v2, Passlib (bcrypt), Uvicorn | RESTful API structure with OpenAPI documentation and WebSocket endpoints. |
+| **Data & Cache** | PostgreSQL 16 Alpine, Redis 7 Alpine | PostgreSQL handles relational persistence; Redis acts as Celery broker, result backend, and Pub/Sub bus. |
+| **Async Execution**| Celery 5.4, Redis Broker | Background worker executing deployment pipelines with in-process `BackgroundTasks` fallback. |
+| **Observability** | Prometheus v3.5.0, Grafana 12.1.1, Grafana Loki 3.5.0, Grafana Alloy v1.10.2 | Prometheus scrapes live FastAPI `/metrics`; Grafana auto-provisions datasources and dashboards. Loki/Alloy run under an optional logging profile. |
+| **Containers** | Docker Engine, Docker Compose (Multi-Profile) | Multi-stage Dockerfiles with non-root security principles and isolated bridge networking. |
+| **Kubernetes** | Declarative Manifests (`k8s/`) | Hardened YAML manifests (`namespace`, `secrets`, `deployments`, `services`, `probes`, `resource limits`). |
+| **Infrastructure**| Terraform (`terraform/`) | Terraform configuration managing Kubernetes provider resources (alternative local IaC path). |
+| **CI/CD** | GitHub Actions, GHCR | Automated linting, typechecking, pytest test isolation, and immutable SHA-tagged image builds. |
+
+### ⚠️ Scope & Non-Implemented Components
+To maintain transparency and technical accuracy for portfolio evaluations:
+- **Argo CD:** Not implemented. Mentioned as an optional future extension; no active GitOps operator is running.
+- **Kafka & Jaeger:** Not implemented and not part of the project architecture. Redis handles all Pub/Sub needs.
+- **AWS Cloud Provisioning:** Not implemented. The project is designed for local Docker Compose and local Kubernetes environments. Terraform is configured for local Kubernetes cluster resources, not for provisioning AWS VPCs, EKS, or RDS.
+
+---
+
 ## 📦 Container Services & Port Allocation
 
-### Core Services (Default Profile)
-The default runtime starts quickly and reliably across all operating systems without requiring Docker daemon socket mounts:
+### Core Services (Default Profile — 7 Services)
+The default runtime starts reliably across all operating systems without requiring Docker daemon socket mounts:
 
 | Service Name | Container Name | Technology | Host Port | Internal Port | Health / Status |
-|---|---|---|---|---|---|
+|---|---|---|:---:|:---:|:---:|
 | **frontend** | `stackforge-frontend` | Next.js 16 / React 19 | `3000` | `3000` | ✅ Healthy |
 | **backend** | `stackforge-backend` | FastAPI / Python 3.12 | `8000` | `8000` | ✅ Healthy (`/health`) |
 | **db** | `stackforge-db` | PostgreSQL 16 Alpine | `5432` | `5432` | ✅ Healthy (`pg_isready`) |
@@ -118,9 +133,9 @@ The default runtime starts quickly and reliably across all operating systems wit
 | **prometheus** | `stackforge-prometheus` | Prometheus v3.5.0 | `9090` | `9090` | ✅ Running (`/metrics` scrape up) |
 | **grafana** | `stackforge-grafana` | Grafana 12.1.1 | `3001` | `3000` | ✅ Running (Auto-Provisioned) |
 
-### Optional Logging Services (`--profile logging`)
+### Optional Logging Services (`--profile logging` — 2 Additional Services)
 | Service Name | Container Name | Technology | Host Port | Internal Port | Health / Status |
-|---|---|---|---|---|---|
+|---|---|---|:---:|:---:|:---:|
 | **loki** | `stackforge-loki` | Grafana Loki 3.5.0 | `3100` | `3100` | ⚡ Optional Profile |
 | **alloy** | `stackforge-alloy` | Grafana Alloy v1.10.2 | — | `12345` | ⚡ Optional Profile |
 
@@ -129,28 +144,30 @@ The default runtime starts quickly and reliably across all operating systems wit
 ## 🚦 Quick Start Guide
 
 ### Prerequisites
-- Docker Engine $\ge 24.0$ & Docker Compose $\ge v2.20$
-- Node.js $\ge 20$ (for local frontend development/linting)
-- Python $\ge 3.12$ (for local backend testing)
+- **Docker:** Engine >= 24.0 & Docker Compose >= v2.20
+- **Node.js:** >= 20.0 (optional, only for direct local frontend development)
+- **Python:** >= 3.12 (optional, only for direct local backend development)
 
-### 1. Clone & Configure
+### 1. Clone & Configure Environment
 ```bash
 git clone https://github.com/satviashwin369-creator/StackForge.git
 cd StackForge
 
-# Copy environment template if not present
+# Copy environment template to .env
 cp .env.example .env
 ```
 
-### 2. Start Core Stack (Recommended)
+The tracked `.env.example` provides pre-configured defaults suitable for local execution. Adjust `JWT_SECRET_KEY` and passwords if desired.
+
+### 2. Launch Core Services (Recommended)
 ```bash
-# Launch the 7 core services in background
+# Build and start all 7 core containers in the background
 docker compose up -d --build
 ```
 
-### 3. (Optional) Start with Full Log Aggregation
+### 3. (Optional) Launch with Full Log Aggregation
 ```bash
-# Launch with Grafana Loki and Alloy log collector
+# Launch with Grafana Loki and Grafana Alloy log forwarder
 docker compose --profile logging up -d
 ```
 
@@ -158,91 +175,154 @@ docker compose --profile logging up -d
 ```bash
 docker compose ps
 ```
+All core containers should report `healthy` or `running`.
 
 ### 5. Access Platform Portals
-| Portal | URL | Credentials / Notes |
+| Portal | URL | Default Credentials / Purpose |
 |---|---|---|
-| **StackForge Web Dashboard** | `http://localhost:3000` | Create account via Signup or use seeded demo |
-| **FastAPI Interactive Swagger** | `http://localhost:8000/docs` | Full OpenAPI specification |
-| **Backend Health Endpoint** | `http://localhost:8000/health` | Returns `{"status": "ok"}` |
+| **StackForge Web Dashboard** | `http://localhost:3000` | Sign Up a new user, or use demo account: `demo@stackforge.io` / `StackForge123!` *(local development only)* |
+| **FastAPI Interactive Swagger** | `http://localhost:8000/docs` | OpenAPI documentation & interactive API playground |
+| **Backend Health Endpoint** | `http://localhost:8000/health` | Service probe: returns `{"status": "ok"}` |
 | **Prometheus Metrics** | `http://localhost:8000/metrics` | Raw Prometheus exposition format |
 | **Prometheus Dashboard** | `http://localhost:9090` | Targets status: `http://localhost:9090/targets` |
-| **Grafana UI** | `http://localhost:3001` | Default: `admin` / `admin` (Pre-provisioned Dashboard) |
+| **Grafana UI** | `http://localhost:3001` | Pre-provisioned `StackForge Platform Overview` dashboard |
+
+> [!WARNING]
+> The seeded demo credentials (`demo@stackforge.io` / `StackForge123!`) are strictly intended for local development and demonstration testing. Never use these credentials in a production environment. All production deployments must configure unique user credentials and custom `JWT_SECRET_KEY` values via environment variables.
+
+### 6. Safe Shutdown (Preserve Data)
+```bash
+# Stop containers while preserving database and volume data
+docker compose down
+```
+
+> [!CAUTION]
+> Never run `docker compose down -v` unless you intentionally wish to delete all PostgreSQL databases, user records, and Grafana volume data.
 
 ---
 
-## 🧪 Automated Testing & Quality Gates
+## 🔍 Live vs. Simulated Functionality Disclosure
 
-StackForge enforces automated quality gates in both local development and CI/CD:
+To ensure transparent and credible technical presentation, StackForge clearly delineates genuine runtime operations from simulated demonstrations:
 
-### Frontend Checks
-```bash
-cd frontend
+### ✅ Genuine Live Implementations
+- **Authentication & Security:** Real bcrypt password hashing, dynamic JWT signing, token decoding, and protected route redirection.
+- **REST APIs & Database:** Full CRUD lifecycle for projects and deployment records backed by real PostgreSQL 16 tables and SQLAlchemy 2.0 ORM sessions.
+- **Task Queuing:** Real Celery asynchronous worker dispatching via Redis broker and result backend.
+- **Log Streaming & WebSockets:** Real WebSocket handshakes with JWT query validation (`/api/v1/ws/logs/{id}?token=...`), Redis Pub/Sub broadcasting, and automatic HTTP polling fallback.
+- **Observability:** Real Prometheus scrapes against FastAPI `/metrics` capturing live HTTP status codes, error rates, latency histograms, and process memory. Real Grafana auto-provisioning.
+- **Container Log Ingestion:** Real Docker container log collection and ingestion via Grafana Alloy and Loki under the logging profile.
 
-# Verify TypeScript type correctness (zero errors)
-npx tsc --noEmit
-
-# Verify ESLint code standards (zero errors, zero warnings)
-npm run lint
-```
-
-### Backend Automated Test Suite
-The backend test suite covers authentication flows, duplicate user rejection, project CRUD lifecycle, user isolation, and health/telemetry endpoints with an isolated in-memory SQLite fixture:
-
-```bash
-cd backend
-
-# Option A: Standalone test runner (zero external dependencies)
-python tests/run_tests.py
-
-# Option B: Run via pytest (when dependencies installed)
-pytest tests -v
-```
+### ⚙️ Simulated Demonstration Features
+- **Deployment Pipeline Simulation:** When a deployment is triggered, `backend/app/services/deployment_simulator.py` simulates the execution of 6 delivery stages (`Source → Build → Test → Security Scan → Deploy → Verify`) with realistic progress steps, timed delays, and log generation. StackForge **does not** spin up physical build runners or push artifacts to external cloud servers.
+- **Infrastructure Fleet Telemetry:** The infrastructure dashboard (`/dashboard/infrastructure`) displays multi-server cluster metrics generated by `backend/app/services/infra_service.py` to illustrate how an enterprise IDP monitors distributed fleet health without incurring paid cloud cluster costs.
 
 ---
 
-## ☸️ Kubernetes Local Deployment
+## 🔒 Security & Configuration Architecture
 
-Declarative, production-inspired Kubernetes manifests are located in `k8s/`:
+- **JWT Authentication:** Stateful token issuance with HS256 algorithm and configurable token expiry.
+- **WebSocket Route Protection:** Handshakes enforce valid JWT tokens via query parameter (`?token=...`), rejecting unauthenticated requests with HTTP 403 / WebSocket close code 1008.
+- **Kubernetes Secret Separation:**
+  - `k8s/secret.yaml.example` is the committed template.
+  - Actual `k8s/secret.yaml` is untracked and ignored by Git to prevent credential leaks.
+- **Terraform Sensitive Parameterization:** Sensitive inputs (`postgres_password`, `jwt_secret_key`) are declared with `sensitive = true` and parameterized via `TF_VAR_*` or untracked `terraform.tfvars`.
+- **Known Security Limitations for Local Mode:**
+  - `/metrics` endpoint is currently unauthenticated to enable native Prometheus scraping. In production, this route should be restricted via internal Kubernetes network policies or an ingress gateway.
+  - OAuth login buttons on the frontend UI represent UI scaffolding; third-party OAuth providers require production client ID and secret configuration.
 
+---
+
+## ☸️ Kubernetes & Infrastructure as Code (IaC)
+
+StackForge provides two independent approaches for deploying to Kubernetes:
+
+```text
+k8s/                             terraform/
+├── namespace.yaml               ├── main.tf
+├── secret.yaml.example          ├── variables.tf
+├── backend/                     ├── outputs.tf
+│   ├── backend.yaml             ├── terraform.tfvars.example
+│   └── worker.yaml              └── README.md
+├── database/postgres.yaml
+├── frontend/frontend.yaml
+└── redis/redis.yaml
+```
+
+### 1. Primary Path: Declarative Kubernetes Manifests (`k8s/`)
+Raw Kubernetes manifests represent the primary deployment path for local clusters (Minikube or kind):
 ```bash
-# 1. Start a local cluster
+# 1. Start local cluster
 minikube start --cpus=4 --memory=4096
-# OR: kind create cluster --name stackforge
 
-# 2. Create the namespace and secrets
+# 2. Apply namespace and secrets
 kubectl apply -f k8s/namespace.yaml
+cp k8s/secret.yaml.example k8s/secret.yaml  # adjust values locally
 kubectl apply -f k8s/secret.yaml
 
-# 3. Deploy Database & Redis
+# 3. Deploy workloads
 kubectl apply -f k8s/database/
 kubectl apply -f k8s/redis/
-
-# 4. Deploy Backend and Celery Worker
 kubectl apply -f k8s/backend/
-
-# 5. Deploy Frontend
 kubectl apply -f k8s/frontend/
-
-# 6. Verify Pods and PVC Status
-kubectl get pods -n stackforge
-kubectl get pvc -n stackforge
-
-# 7. Access Frontend
-kubectl port-forward svc/frontend -n stackforge 3000:3000
 ```
 
----
+### 2. Alternative Path: Terraform (`terraform/`)
+Terraform configurations manage the same underlying Kubernetes resources using HashiCorp's official `kubernetes` provider.
 
-## 📊 Live vs. Simulated Telemetry Disclosure
-
-In accordance with transparent engineering principles:
-- **Genuine Live Signals:** FastAPI `/health`, Prometheus container scrape status (`up{job="stackforge-backend"}`), live HTTP request rate (`http_requests_total`), error ratios, latency histograms (`http_request_duration_seconds`), and Python process memory usage.
-- **Simulated Demonstration Data:** Infrastructure node cards (`/dashboard/infrastructure`) model multi-server cluster metrics to illustrate how an enterprise Internal Developer Platform visualizes distributed fleet telemetry without incurring paid cloud cluster costs.
+> [!WARNING]
+> **Do not apply both paths simultaneously.** Raw manifests (`k8s/`) and Terraform configurations (`terraform/`) manage overlapping resources. Applying both to the same cluster will result in resource ownership conflicts and state drift. Choose one approach.
 
 ---
 
-## 📈 Roadmap
+## 🧪 Automated Testing & CI/CD Quality Gates
+
+### Local Testing
+```bash
+# Frontend type check (zero errors)
+cd frontend && npx tsc --noEmit
+
+# Frontend lint check (zero errors, zero warnings)
+cd frontend && npm run lint
+
+# Backend automated test suite (in-memory SQLite isolation, zero PostgreSQL dependency)
+cd backend && pytest tests -v
+# OR via standalone runner:
+cd backend && python tests/run_tests.py
+```
+
+### GitHub Actions CI/CD Pipeline
+- **Triggers:** Push and Pull Request events.
+- **Jobs:**
+  1. **Frontend CI:** Node 20 environment executing `npm run lint`, `npx tsc --noEmit`, and `npm run build`.
+  2. **Backend CI:** Python 3.12 environment executing `pytest tests -v` with in-memory SQLite isolation.
+  3. **Docker Build & Publish:** Multi-service image builds for backend and frontend. Images are tagged with immutable commit SHAs. Image publishing (`:latest`) to GitHub Container Registry (GHCR) is strictly restricted to trusted pushes on the `main` branch.
+
+---
+
+## ⚠️ Verified Project Limitations
+
+In the interest of full technical transparency:
+1. **Deployment Pipeline is Simulated:** Delivery stages and build logs are simulated by `deployment_simulator.py`.
+2. **Infrastructure Telemetry is Simulated:** Server cluster metrics are synthetic data generated by `infra_service.py`.
+3. **No Cloud Infrastructure Provisioning:** StackForge does not provision actual AWS, GCP, or Azure resources.
+4. **Kubernetes Runtime Not Validated Locally:** Manifests are hardened and validated syntactically; however, end-to-end runtime deployment on a live cluster was not executed during Task 2 validation due to the absence of an active local cluster (Minikube/kind).
+5. **OAuth Scaffolding:** Third-party OAuth buttons require external provider credentials.
+6. **Unauthenticated Metrics:** FastAPI `/metrics` is exposed without bearer token authentication.
+
+---
+
+## 📸 Recommended Screenshots for Portfolio
+
+To maximize impact on GitHub and during technical interviews, capture and add these screenshots from the running environment into `docs/images/`:
+1. `dashboard-overview.png`: Main dashboard showing KPI cards, recent activity stream, and health indicators.
+2. `deployment-pipeline.png`: Live 6-stage pipeline visualization showing status transitions and log viewer.
+3. `project-catalog.png`: Project management view showing registered microservices and repository links.
+4. `grafana-dashboard.png`: Pre-provisioned Grafana `StackForge Platform Overview` displaying live Prometheus scrape metrics.
+
+---
+
+## 🗺️ Roadmap & Milestone Status
 
 - [x] **Milestone 1–4:** Frontend & Backend Authentication, Session Persistence, Route Guards
 - [x] **Milestone 5:** Live Dashboard APIs & Real-Time Metrics
@@ -250,4 +330,4 @@ In accordance with transparent engineering principles:
 - [x] **Milestone 7:** 6-Stage Deployment Pipeline with Celery Dispatch & Fallback
 - [x] **Milestone 8:** Observability Stack (Prometheus Scraper, Auto-Provisioned Grafana, Optional Loki Profile)
 - [x] **Milestone 9:** DevOps Hardening (Automated Test Suite, ESLint Zero Errors, Immutable CI Tagging, K8s Manifests)
-- [ ] **Milestone 10 (Optional Extension):** Terraform AWS Cloud IaC & Argo CD GitOps Sync
+- [ ] **Milestone 10 (Future Exploration):** Argo CD GitOps operator integration & live cloud deployment

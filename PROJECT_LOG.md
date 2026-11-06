@@ -35,7 +35,7 @@ The goal is to build a complete Cloud Native DevOps platform demonstrating moder
 - Kubernetes
 - Terraform
 - GitHub Actions
-- Argo CD
+- Argo CD (Planned Extension / Optional)
 - Prometheus
 - Grafana
 - Loki
@@ -553,16 +553,24 @@ The Celery worker does not use an HTTP healthcheck because it does not expose an
 
 # Next Task
 
-## Phase E1.2 — Backend CI Fix (refactor/devops-hardening)
+## Final PR Review & Merge (`refactor/devops-hardening` → `main`)
 
-Verify that the CI run triggered by commit `da3f919` passes backend tests
-without a PostgreSQL server.  After CI is green, the PR is ready for review.
+Subject to explicit user approval:
+1. Perform final PR inspection on GitHub.
+2. Merge PR #1 into `main` via Squash & Merge (or standard merge as preferred).
+3. Verify that `main` branch GitHub Actions CI completes successfully and publishes release images to GHCR with `:latest` tag.
 
-## Optional Future Work
+## Post-Merge Work & Portfolio Presentation
 
-- Milestone 10: Argo CD GitOps configuration (optional, not required for portfolio)
-- Enrich Grafana dashboard JSON with additional panels
-- Replace `/metrics` unauthenticated access with network-policy restriction
+- Pin repository on GitHub profile.
+- Capture local runtime screenshots (`docs/images/`) and embed in README.
+- Prepare technical interview talking points:
+  - Microservice containerization and multi-stage Dockerfiles.
+  - Celery asynchronous dispatch and Redis Pub/Sub log streaming.
+  - Test isolation strategies (in-memory SQLite fixture vs production PostgreSQL).
+  - Kubernetes manifest hardening (secrets, resources, health probes).
+  - Prometheus scraping and Grafana dashboard auto-provisioning.
+  - CI/CD security (immutable commit-SHA tagging vs `:latest` release restriction).
 
 ---
 
@@ -602,19 +610,21 @@ If another AI continues this project:
 
 # Milestone Status Summary
 
-| Phase | Milestone | Status |
+| Phase | Milestone / Task | Status |
 |---|---|---|
-| Phase 1 — Foundation | Foundation | ✅ Complete |
-| Phase 2 — Authentication | Milestone 1 — Frontend Authentication | ✅ Complete |
-| Phase 2 — Authentication | Milestone 2 — Backend Authentication Integration | ✅ Complete |
-| Phase 2 — Authentication | Milestone 3 — JWT Storage & Session Persistence | ✅ Complete |
-| Phase 2 — Authentication | Milestone 4 — Protected Routes & Authorization | ✅ Complete |
-| Phase 3 — Platform Features | Milestone 5 — Dashboard API Integration | ✅ Complete |
-| Phase 3 — Platform Features | Milestone 6 — Projects Management | ✅ Complete |
-| Phase 3 — Platform Features | Milestone 7 — Deployments | ✅ Complete |
-| Phase 3 — Platform Features | Milestone 8 — Monitoring & Logs | ✅ Complete |
-| Phase 4 — DevOps Hardening | Milestone 9 — Quality Gates, CI/CD, K8s & Security | ✅ Complete |
-| Phase 5 — Optional Extensions | Milestone 10 — Terraform Cloud IaC & GitOps | ⏳ Optional / Planned |
+| Phase 1 — Foundation | Foundation Scaffolding & Topologies | ✅ Complete |
+| Phase 2 — Authentication | Milestones 1–4: JWT Auth, Stores & Route Guards | ✅ Complete |
+| Phase 3 — Platform Features | Milestones 5–8: Dashboard, Projects, Pipelines & Observability | ✅ Complete |
+| Phase 4 — DevOps Hardening | Milestone 9: Quality Gates, CI/CD, K8s & Security | ✅ Complete |
+| Phase E1.2 — CI Isolation | In-Memory SQLite Test Engine Patching (`da3f919`) | ✅ Complete |
+| Phase E1.3 — CI & Identity | Actions Run `42182396415` & Verified Git Identity (`581088a`) | ✅ Complete |
+| Phase E2 — Final PR Audit | Read-Only PR #1 Review across all 48 Changed Files | ✅ Complete |
+| Phase E2.1 — Minor Fixes | Standalone Test Runner Alignment (`e04fd2c`) | ✅ Complete |
+| Task 1 — PR Finalization | PR #1 Conversion from Draft to Ready for Review | ✅ Complete |
+| Task 2 — Runtime Validation | Full Local Docker Compose & Observability Validation | ✅ Complete |
+| Task 3 — Documentation Audit | Comprehensive README, PROJECT_LOG & Docs Alignment | ✅ Complete |
+| Phase 5 — Merge & Release | Merge PR #1 to `main` & GitHub Profile Presentation | ⏳ Next Step (Awaiting Approval) |
+| Phase 6 — Future Explorations | Milestone 10: Optional Argo CD GitOps and live cloud deployment exploration | ⏳ Planned / Optional |
 
 ---
 
@@ -687,3 +697,111 @@ still selects PostgreSQL via `sqlalchemy_database_uri` in `Settings`.
 
 Backend CI (`pytest tests -v` on Python 3.12 in GitHub Actions, no PostgreSQL).
 Frontend CI (`npm run lint`, `npx tsc --noEmit`, `npm run build`).
+
+---
+
+## Phase E1.3 — GitHub Actions Verification & Git Identity Verification
+
+**Branch:** `refactor/devops-hardening`
+**Commits:** `da3f919` (CI fix), `581088a` (Documentation update)
+**GitHub Actions Run:** `42182396415` (Status: `success`)
+
+### Summary & Verification
+1. **GitHub Actions CI:** Confirmed all 3 jobs passed:
+   - Frontend CI: `npm run lint`, `npx tsc --noEmit`, `npm run build` (success).
+   - Backend CI: `pytest tests -v` on Python 3.12 with SQLite isolation (success).
+   - Docker Build: Multi-service container image build (success).
+2. **Git Identity Verification:**
+   - Author name: `Ashwin Satvi`
+   - Verified email: `satviashwin369@gmail.com`
+   - Cleaned up malformed local `.gitconfig` entries to ensure consistent author identity for all subsequent commits.
+3. **Repository State:** Branch `refactor/devops-hardening` is clean and in 1:1 sync with origin. `main` branch remains untouched.
+
+---
+
+## Phase E2 — Final Pull Request Read-Only Review
+
+**Branch:** `refactor/devops-hardening`
+**Pull Request:** #1 (Draft, 14 commits, 0 merge conflicts)
+**Head Commit:** `581088a601dd3dc432ce539e27c0736e92d38ff5`
+
+### Audit Findings
+- Performed a read-only audit across all 48 changed files against architecture rules and documentation.
+- All core implementations (Auth, CRUD, Celery, Prometheus, Grafana, Docker, K8s, CI) were verified intact with no regressions.
+- Identified two minor non-blocking findings:
+  1. Standalone test script `backend/tests/run_tests.py` referenced outdated test function names that did not match `test_auth.py` and `test_projects.py`.
+  2. Verified Git commit author email configuration needed standardization before creating any final commit.
+
+---
+
+## Phase E2.1 — Final Minor Fixes & Standalone Test Runner Alignment
+
+**Branch:** `refactor/devops-hardening`
+**Commit:** `e04fd2c03109a7b9032dd4231138ec60cd43970d` (`fix(tests): align standalone test runner with test functions`)
+**GitHub Actions Run:** `42185554521` (Status: `success`)
+
+### Summary & Fix
+1. Updated `backend/tests/run_tests.py` to match the exact test function signatures in `test_auth.py` and `test_projects.py`.
+2. Verified standalone runner execution: 6 auth tests and 7 project CRUD tests passed cleanly with 0 errors.
+3. Created commit `e04fd2c` under verified Git identity: `Ashwin Satvi <satviashwin369@gmail.com>`.
+4. Pushed to remote; triggered GitHub Actions CI run `42185554521`. All 3 jobs (Frontend CI, Backend CI, Docker Build) succeeded.
+
+---
+
+## Task 1 — Pull Request #1 Finalization
+
+**Branch:** `refactor/devops-hardening`
+**Pull Request:** #1 (https://github.com/satviashwin369-creator/StackForge/pull/1)
+**Head Commit:** `e04fd2c03109a7b9032dd4231138ec60cd43970d`
+
+### Action
+- Verified local and remote branch synchronization.
+- Confirmed working tree clean and all 15 commits present.
+- Converted PR #1 on GitHub from **Draft** to **Ready for review**.
+- Auto-merge remains disabled; PR remains open and unmerged awaiting final review.
+
+---
+
+## Task 2 — Final Local Runtime Validation
+
+**Branch:** `refactor/devops-hardening`
+**Head Commit:** `e04fd2c03109a7b9032dd4231138ec60cd43970d`
+**Mode:** Non-destructive runtime audit on local machine.
+
+### Concrete Results
+1. **Docker Compose:** Syntax validated with `docker compose config`. All 9 containers active and running (`stackforge-frontend`, `stackforge-backend`, `stackforge-db`, `stackforge-redis`, `stackforge-worker`, `stackforge-prometheus`, `stackforge-grafana`, `stackforge-loki`, `stackforge-alloy`).
+2. **Frontend:** Port 3000 returned HTTP 200. Next.js App Router and static assets serving properly.
+3. **Backend API:** Port 8000 returned HTTP 200 on `/health`, `/docs` (OpenAPI Swagger), and `/metrics`.
+4. **PostgreSQL & Redis:** Healthy container status. Relational tables initialized; Redis broker and Pub/Sub bus operational.
+5. **Celery Background Worker:** Connected to `redis://redis:6379/1`, registered task `stackforge.run_deployment`.
+6. **Authentication:** Demo login (`demo@stackforge.io`), `/auth/me`, and dynamic user registration (`/auth/register`) validated with real JWT bearer tokens.
+7. **Project Management:** Full CRUD operations validated (List 3 seeded projects, Create new project, Delete test project).
+8. **Deployment Pipeline & Celery Execution:** Deployment queued and transitioned from `queued` to `deploying`. Celery worker generated 4 live log lines into the database.
+9. **WebSocket Logs:** Unauthenticated request rejected with HTTP 403; Authenticated handshake returned HTTP 101 Switching Protocols.
+10. **Observability (Prometheus & Grafana):** Prometheus target `http://backend:8000/metrics` is UP and scraped every 15s. Grafana `/api/health` returned OK with auto-provisioned dashboards.
+11. **Logging (Loki & Alloy):** Alloy actively tails container logs; Loki receives log pushes.
+12. **Kubernetes Runtime:** **NOT TESTED** (no local Minikube/kind cluster was active on host machine; expected and documented per safety guidelines).
+
+---
+
+## Task 3 — Final Documentation Audit & Cleanup
+
+**Branch:** `refactor/devops-hardening`
+**Head Commit:** `e04fd2c03109a7b9032dd4231138ec60cd43970d`
+
+### Actions & Corrections
+1. **README.md:**
+   - Reframed tone to student-built, portfolio-grade IDP (avoiding exaggerated enterprise claims).
+   - Added clear simulation disclosure distinguishing live backend operations from simulated pipeline stages (`deployment_simulator.py`) and infrastructure fleet metrics (`infra_service.py`).
+   - Clarified technology scope: Argo CD, Kafka, Jaeger, and AWS are not implemented.
+   - Clarified that `k8s/` and `terraform/` manage overlapping Kubernetes resources and must not be applied simultaneously.
+   - Added safe shutdown instructions (`docker compose down`, never `-v`).
+   - Documented unauthenticated `/metrics` and pending OAuth credentials as verified limitations.
+   - Recommended specific screenshots for portfolio presentation.
+2. **PROJECT_LOG.md:**
+   - Synchronized current branch and HEAD commit (`e04fd2c`).
+   - Appended Phase E1.3, E2, E2.1, Task 1, Task 2, and Task 3 records.
+   - Updated Milestone Status Summary table and Next Task section.
+3. **docs/Roadmap.md & docs/Deployment.md:**
+   - Aligned roadmap milestone statuses.
+   - Documented resource ownership boundary between Kubernetes manifests and Terraform.

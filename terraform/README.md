@@ -13,6 +13,9 @@ The Terraform module manages:
 - **Compute:** FastAPI Backend Deployment & ClusterIP Service, Celery Worker Deployment.
 - **Frontend:** Next.js Dashboard Deployment & NodePort Service.
 
+> [!NOTE]
+> This module manages Kubernetes provider resources as an alternative to the raw YAML manifests in `k8s/`. Because both configurations manage overlapping resources, **do not apply both simultaneously** to the same cluster to avoid resource conflicts and state drift.
+
 ---
 
 ## Input Variables

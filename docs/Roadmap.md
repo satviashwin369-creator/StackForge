@@ -29,9 +29,10 @@
 - [x] **CI Pipeline & Quality Checks:** GitHub Actions pipeline running lint, type checks, backend tests, and multi-service image builds
 - [x] **Safe GHCR Image Publishing:** Immutable commit-SHA tagging with protected release policy (pushes `:latest` only on trusted `main` branch pushes; never from untrusted PRs)
 - [x] **Kubernetes Manifests:** Namespace isolation (`k8s/namespace.yaml`), Secrets abstraction (`k8s/secret.yaml`), Deployments, Services, readiness/liveness probes, and resource requests/limits across all microservices
+- [x] **Terraform Kubernetes IaC:** Declarative Terraform configurations (`terraform/`) managing Kubernetes provider resources as an alternative local IaC path
 - [x] **Repository Hygiene:** Eliminated orphaned lockfiles, legacy compose files, and conflicting dev Dockerfiles
 
 ## Phase 5 — Optional Extensions & Future Milestones ⏳ PLANNED
-- [ ] **Terraform Cloud Provisioning:** Optional IaC module for AWS EKS / RDS / VPC (preserved in `terraform/` as standalone extension)
-- [ ] **Argo CD GitOps:** Continuous declarative reconciliation of `k8s/` manifests
+- [ ] **Argo CD GitOps:** Continuous declarative reconciliation of `k8s/` manifests (planned extension, not implemented)
+- [ ] **AWS Cloud Infrastructure:** Optional future extension to provision dedicated AWS VPC, EKS, and RDS via Terraform (current Terraform manages Kubernetes provider resources)
 - [ ] **Public Demo Deployment:** Cloud-hosted live portfolio demonstration using managed PostgreSQL (Neon/Supabase) and container runtime (Railway/Render)
