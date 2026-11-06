@@ -434,32 +434,40 @@ Completed:
 
 ---
 
-## Milestone 9 — DevOps Infrastructure
+## Milestone 9 — DevOps Hardening, Quality Gates & Kubernetes Architecture
 
 Status:
 
-⏳ Pending
+✅ Complete
 
-Tasks:
+Completed:
 
-- [ ] Docker production setup
-- [ ] Kubernetes manifests
-- [ ] Terraform infrastructure
-- [ ] AWS deployment
-- [ ] GitHub Actions CI/CD
-- [ ] Argo CD GitOps workflow
+- [x] Docker production setup (multi-stage Dockerfiles, Compose health checks)
+- [x] Kubernetes manifests (namespace, secrets via secretKeyRef, resource limits, probes)
+- [x] Terraform infrastructure (k8s provider, parameterized credentials, sensitive variables)
+- [x] GitHub Actions CI/CD (lint, type-check, backend tests, Docker build, GHCR publish)
+- [x] Frontend ESLint and TypeScript quality gates (0 errors)
+- [x] Automated backend pytest suite with SQLite isolation
+- [x] WebSocket JWT authentication
+- [x] Celery dispatch with BackgroundTasks fallback
+- [x] Loki/Alloy isolated under Docker Compose logging profile
+- [x] Grafana datasource and dashboard auto-provisioning
+- [x] Prometheus HTTP metrics middleware
+
+Note: Argo CD GitOps is classified as optional (Milestone 10).
+AWS cloud deployment is not in scope for this project.
 
 ---
 
 # Current Branch
 
-main
+refactor/devops-hardening
 
 ---
 
 # Latest Completed Feature
 
-fix(monitoring): dynamic Alloy → Loki per-service log labeling
+fix(tests): patch app.db.session and app.main engines before TestClient lifespan
 
 ---
 
@@ -536,30 +544,25 @@ The Celery worker does not use an HTTP healthcheck because it does not expose an
 # Known Issues
 
 - OAuth providers are prepared but production credentials are pending
-- Metrics authorization/security policy needs final production decision
+- Metrics endpoint has no authentication (acceptable for internal/portfolio use; document the decision)
 - Grafana dashboards can be further enriched with custom pre-provisioned JSON models
-- Cloud deployment not started
-- Kubernetes deployment not started
-- Terraform infrastructure not started
-- Production CI/CD pipeline not finalized
+- Terraform manages Kubernetes resources only (no cloud IaC provisioning yet)
+- Argo CD GitOps is optional, not currently implemented
 
 ---
 
 # Next Task
 
-## Milestone 9 — DevOps Infrastructure
+## Phase E1.2 — Backend CI Fix (refactor/devops-hardening)
 
-### Immediate Next Task
+Verify that the CI run triggered by commit `da3f919` passes backend tests
+without a PostgreSQL server.  After CI is green, the PR is ready for review.
 
-Implement Kubernetes manifests and Terraform infrastructure modules.
+## Optional Future Work
 
-Focus:
-
-- Kubernetes deployment manifests for frontend, backend, PostgreSQL, and Redis
-- Kubernetes Service and Ingress routing definitions
-- Terraform IaC modules for cloud infrastructure provisioning
-- GitHub Actions CI/CD workflows for automated build, test, and container image publishing
-- Argo CD GitOps declarative pipeline integration
+- Milestone 10: Argo CD GitOps configuration (optional, not required for portfolio)
+- Enrich Grafana dashboard JSON with additional panels
+- Replace `/metrics` unauthenticated access with network-policy restriction
 
 ---
 
@@ -637,7 +640,7 @@ If another AI continues this project:
 ```text
 k8s/
 ├── namespace.yaml
-├── secret.yaml
+├── secret.yaml.example     ← committed placeholder (never populate; use kubectl create secret)
 ├── backend/
 │   ├── backend.yaml
 │   └── worker.yaml
@@ -648,3 +651,39 @@ k8s/
 └── redis/
     └── redis.yaml
 ```
+
+Note: `k8s/secret.yaml` is listed in `.gitignore` and is **not tracked** in Git.
+Copy from `secret.yaml.example` for local cluster use only.
+
+---
+
+## Phase E1.2 — Backend CI Test Isolation Fix
+
+**Branch:** `refactor/devops-hardening`
+**Commit:** `da3f919`
+
+### Problem
+
+The first GitHub Actions CI run exposed a backend test isolation defect.
+`main.py` lifespan calls `Base.metadata.create_all(bind=engine)` where `engine`
+is the production PostgreSQL engine imported from `app.db.session`.  In CI
+there is no PostgreSQL server, so tests failed during lifespan startup before
+any test fixture executed.  Local tests masked this because Docker Compose
+PostgreSQL was running during development.
+
+### Fix
+
+`backend/tests/conftest.py` now patches `app.db.session.engine` and
+`app.main.engine` with the in-memory SQLite test engine **at module import
+time**, before `TestClient(app)` triggers the FastAPI lifespan.
+`SessionLocal` is likewise redirected.  Production code is not affected; it
+still selects PostgreSQL via `sqlalchemy_database_uri` in `Settings`.
+
+### Files Changed
+
+- `backend/tests/conftest.py` — engine patching, cleaner structure, documentation
+
+### Verification
+
+Backend CI (`pytest tests -v` on Python 3.12 in GitHub Actions, no PostgreSQL).
+Frontend CI (`npm run lint`, `npx tsc --noEmit`, `npm run build`).
