@@ -34,9 +34,11 @@ StackForge consolidates these operational tasks into a unified control plane:
 
 ---
 
-## 🏗️ System Architecture
+## 🏛️ System Architecture
 
 StackForge employs a microservice-inspired architecture decoupled into clear presentation, API, queuing, storage, and observability layers:
+
+![StackForge High-Level Design Architecture](docs/diagrams/hld-architecture.png)
 
 ```mermaid
 flowchart TD
@@ -61,21 +63,21 @@ flowchart TD
 
     subgraph Async ["Asynchronous Task Layer"]
         Worker["Celery Worker (app.celery_app)"]
-        Redis[("Redis 7 (Port 6379)\nBroker (db 1) & Results (db 2)")]
+        Redis[("Redis 7 (Port 6379)<br/>Broker (db 1) and Results (db 2)")]
     end
 
     subgraph Database ["Persistence Layer"]
-        Postgres[("PostgreSQL 16 (Port 5432)\nUsers, Projects, Deployments, Logs")]
+        Postgres[("PostgreSQL 16 (Port 5432)<br/>Users, Projects, Deployments, Logs")]
     end
 
     subgraph CoreObservability ["Core Observability"]
-        Prometheus["Prometheus (Port 9090)\nScrapes Backend :8000/metrics (15s)"]
-        Grafana["Grafana 12 (Port 3001)\nPre-Provisioned Dashboards"]
+        Prometheus["Prometheus (Port 9090)<br/>Scrapes Backend :8000/metrics (15s)"]
+        Grafana["Grafana 12 (Port 3001)<br/>Pre-Provisioned Dashboards"]
     end
 
-    subgraph OptionalLogging ["Optional Logging Profile (--profile logging)"]
-        Loki["Grafana Loki 3.5 (Port 3100)\nLog Storage Engine"]
-        Alloy["Grafana Alloy v1.10\nContainer Log Forwarder"]
+    subgraph OptionalLogging ["Optional Logging Profile"]
+        Loki["Grafana Loki 3.5 (Port 3100)<br/>Log Storage Engine"]
+        Alloy["Grafana Alloy v1.10<br/>Container Log Forwarder"]
     end
 
     Browser --> UI

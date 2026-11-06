@@ -5,7 +5,7 @@
 | **Document Type** | Comprehensive System Design: High-Level Design (HLD) & Low-Level Design (LLD) |
 | **System Name** | **StackForge Platform Engine** |
 | **Architectural Style** | Microservice-Decoupled Event-Driven Cloud Native Platform |
-| **Document Version** | 3.0.0 (Visual Architecture Edition) |
+| **Document Version** | 3.1.0 (GitHub Visual Architecture Edition) |
 | **Status** | **Approved & Production-Ready** |
 | **Repository** | `satviashwin369-creator/stackforge` |
 | **Base Branch** | `main` |
@@ -19,14 +19,14 @@
 3. [The "Deploy Packet" Lifecycle Sequence](#3-the-deploy-packet-lifecycle--execution-sequence)
 4. [Docker Container Network Topology](#4-network--docker-container-topology)
 5. [Kubernetes Production Cluster Architecture](#5-kubernetes-production-cluster-architecture)
-6. [PostgreSQL 1 Relational Database ERD](#6-relational-database-modeling-entity-relationship)
+6. [PostgreSQL 16 Relational Database ERD](#6-relational-database-modeling-entity-relationship)
 7. [Real-Time WebSocket Protocol State Machine](#7-real-time-websocket-protocol--state-machine)
 8. [Full-Stack Observability & Telemetry Pipeline](#8-observability--telemetry-dataflow-architecture)
 9. [Automated CI/CD Release Pipeline](#9-automated-cicd--artifact-release-pipeline)
 10. [Systems Design Trade-Off Matrix](#10-systems-design-trade-off-matrix)
 
 > [!TIP]
-> **Interactive Browser Visualizer:** For an interactive, zoomable presentation experience with 9 tabbed diagrams and interview talking points, open [`docs/ARCHITECTURE_DIAGRAMS.html`](ARCHITECTURE_DIAGRAMS.html) directly in Chrome, Edge, or Firefox.
+> **Interactive Browser Visualizer:** For an interactive presentation with 9 tabbed diagrams, zoom controls, and interview elevator pitches, open [`docs/ARCHITECTURE_DIAGRAMS.html`](ARCHITECTURE_DIAGRAMS.html) directly in any browser.
 
 ---
 
@@ -36,14 +36,13 @@ StackForge separates interactive presentation, synchronous API ingress, asynchro
 
 ### 1.1 HLD Visual Architecture Diagram
 
-![High-Level Design Architecture Diagram](diagrams/01-hld-system-architecture.svg)
+![High-Level Design Architecture Diagram](diagrams/hld-architecture.png)
 
-<details>
-<summary>▶ Click to view Mermaid.js source for HLD Diagram</summary>
+### 1.2 HLD Interactive Flowchart
 
 ```mermaid
 flowchart TD
-    subgraph Client ["Client & Presentation Tier (Port 3000)"]
+    subgraph Client ["Client and Presentation Tier (Port 3000)"]
         Browser["Developer Web Browser"]
         NextApp["Next.js 16 App Router<br/>(React 19 / Tailwind v4)"]
         Zustand["Zustand Auth Store"]
@@ -57,7 +56,7 @@ flowchart TD
         PrometheusMiddleware["Prometheus Middleware (/metrics)"]
     end
 
-    subgraph AsyncTier ["Distributed Queue & Event Tier"]
+    subgraph AsyncTier ["Distributed Queue and Event Tier"]
         Celery["Celery 5.4 Distributed Worker Pool"]
         RedisQ[("Redis 7 Alpine (Port 6379)<br/>DB 0: WS Pub/Sub<br/>DB 1: Task Queue<br/>DB 2: Result Backend")]
     end
@@ -84,7 +83,7 @@ flowchart TD
 
     FastAPI -.->|"delay() Task"| Celery
     Celery <-->|"LPUSH / BRPOP"| RedisQ
-    Celery -->|"Status & Logs"| Postgres
+    Celery -->|"Status and Logs"| Postgres
     Celery -->|"PUBLISH log line"| RedisQ
 
     FastAPI --> PrometheusMiddleware
@@ -93,9 +92,8 @@ flowchart TD
     Alloy -.->|"Tails container logs"| Loki
     Loki -.->|"LogQL"| Grafana
 ```
-</details>
 
-### 1.2 System Layer Responsibilities
+### 1.3 System Layer Responsibilities
 
 | Subsystem | Technology | Port | Responsibilities |
 | :--- | :--- | :---: | :--- |
@@ -114,10 +112,9 @@ The Low-Level Design models internal code organization, dependency injection wir
 
 ### 2.1 LLD Visual Component & Class Diagram
 
-![Low-Level Design Component Diagram](diagrams/02-lld-component-class-design.svg)
+![Low-Level Design Component Diagram](diagrams/lld-components.png)
 
-<details>
-<summary>▶ Click to view Mermaid.js source for LLD Diagram</summary>
+### 2.2 LLD Class Hierarchy Diagram
 
 ```mermaid
 classDiagram
@@ -181,9 +178,8 @@ classDiagram
     FastAPIApp --> AuthService : uses
     FastAPIApp --> DeploymentSimulator : triggers via Celery
 ```
-</details>
 
-### 2.2 Three-Tier Software Architecture
+### 2.3 Three-Tier Software Architecture
 1. **API Routers (`backend/app/api/v1/`):** Strict boundary handlers that parse HTTP requests, enforce security dependencies (`Depends(get_current_active_user)`), validate DTOs via Pydantic v2, and return typed responses. Zero raw SQL in routers.
 2. **Domain Services (`backend/app/services/`):** Contains pure business logic. `deployment_simulator.py` manages stage progression timings and synthetic exit codes. `log_streamer.py` handles Redis channel publishing.
 3. **Data Access & Models (`backend/app/models/`):** SQLAlchemy 2.0 declarative mappings with typed `Mapped[]` columns. Sessions are injected into routes using `Depends(get_db)` with automatic session closure.
@@ -196,10 +192,9 @@ When a developer clicks **"Deploy Now"**, StackForge offloads execution asynchro
 
 ### 3.1 "Deploy Packet" Visual Sequence Diagram
 
-![Deploy Packet Sequence Diagram](diagrams/03-deploy-packet-lifecycle.svg)
+![Deploy Packet Sequence Diagram](diagrams/deploy-sequence.png)
 
-<details>
-<summary>▶ Click to view Mermaid.js source for Sequence Diagram</summary>
+### 3.2 "Deploy Packet" Interactive Sequence Diagram
 
 ```mermaid
 sequenceDiagram
@@ -217,7 +212,7 @@ sequenceDiagram
     API->>DB: INSERT INTO deployments (status='QUEUED')
     API->>Redis: LPUSH celery (execute_deployment_task)
     API-->>FE: HTTP 202 Accepted (deployment_id)
-    FE-->>Dev: Opens Terminal Modal & connects WS
+    FE-->>Dev: Opens Terminal Modal and connects WS
 
     Dev->>WS: Connect: ws://backend/ws/logs?token=JWT
     WS->>Redis: SUBSCRIBE "deployments:{id}:logs"
@@ -236,9 +231,8 @@ sequenceDiagram
         Worker->>DB: Batch INSERT deployment_logs
     end
 ```
-</details>
 
-### 3.2 Step-by-Step Execution Journey
+### 3.3 Step-by-Step Execution Journey
 1. **Trigger:** Developer initiates deployment from the frontend cockpit.
 2. **Ingress & Authentication:** FastAPI decodes the Bearer JWT, extracts the tenant `user_id`, and verifies project ownership.
 3. **Queue Insertion:** A new record with status `QUEUED` is committed to PostgreSQL.
@@ -259,10 +253,9 @@ StackForge manages 9 containers linked over an internal bridge network (`stackfo
 
 ### 4.1 Docker Container Network Topology Diagram
 
-![Docker Network Topology Diagram](diagrams/04-docker-container-network.svg)
+![Docker Network Topology Diagram](diagrams/docker-network.png)
 
-<details>
-<summary>▶ Click to view Mermaid.js source for Docker Topology</summary>
+### 4.2 Docker Topology Flowchart
 
 ```mermaid
 flowchart LR
@@ -306,9 +299,8 @@ flowchart LR
     GF -->|"LogQL"| LK
     AL -->|"Ships logs"| LK
 ```
-</details>
 
-### 4.2 Port & Volume Allocation Matrix
+### 4.3 Port & Volume Allocation Matrix
 
 | Container Name | Service | Host Port | Internal Port | Persistent Volume Mount |
 | :--- | :--- | :---: | :---: | :--- |
@@ -330,15 +322,14 @@ StackForge provides declarative manifests in `k8s/` structured for zero-trust se
 
 ### 5.1 Kubernetes Cluster Visual Diagram
 
-![Kubernetes Cluster Architecture Diagram](diagrams/05-kubernetes-cluster-pods.svg)
+![Kubernetes Cluster Architecture Diagram](diagrams/k8s-cluster.png)
 
-<details>
-<summary>▶ Click to view Mermaid.js source for Kubernetes Architecture</summary>
+### 5.2 Kubernetes Pod Topology Flowchart
 
 ```mermaid
 flowchart TD
     subgraph Ingress ["Ingress Controller"]
-        Ing["stackforge.io Ingress<br/>TLS Termination & Route Routing"]
+        Ing["stackforge.io Ingress<br/>TLS Termination and Route Routing"]
     end
 
     subgraph K8sNamespace ["Namespace: 'stackforge'"]
@@ -371,7 +362,7 @@ flowchart TD
     end
 
     Ing -->|"/"| SvcFE
-    Ing -->|"/api & /ws"| SvcBE
+    Ing -->|"/api and /ws"| SvcBE
     SvcFE --> PodFE1 & PodFE2
     SvcBE --> PodBE1 & PodBE2
 
@@ -383,13 +374,6 @@ flowchart TD
     PodWK1 & PodWKn --> SvcRD
     PodPG --- PVCPG
 ```
-</details>
-
-### 5.2 Kubernetes Production Hardening Specifications
-- **Security Contexts:** Backend Pods enforce `readOnlyRootFilesystem: true`, `runAsNonRoot: true`, and `capabilities: { drop: ["ALL"] }`. Frontend runs as unprivileged user `nextjs` (UID 1001).
-- **Resource Governance:** Explicit requests (`100m CPU`, `128Mi RAM`) and limits (`500m CPU`, `512Mi RAM`) prevent noisy-neighbor container starvation.
-- **Health Probes:** Liveness and readiness HTTP probes on `/health` ensure traffic is only routed to responsive pods.
-- **KEDA Autoscaling:** Celery workers autoscale from 1 to 10 replicas based on the Redis queue length (`LLEN celery > 10`).
 
 ---
 
@@ -399,10 +383,9 @@ StackForge models relational data in PostgreSQL 16 using SQLAlchemy 2.0 ORM with
 
 ### 6.1 Database Relational ERD Diagram
 
-![Database Relational ERD](diagrams/06-database-relational-erd.svg)
+![Database Relational ERD](diagrams/database-erd.png)
 
-<details>
-<summary>▶ Click to view Mermaid.js source for Database ERD</summary>
+### 6.2 Relational Schema Flowchart
 
 ```mermaid
 erDiagram
@@ -446,7 +429,6 @@ erDiagram
         timestamp timestamp "Emission timestamp"
     }
 ```
-</details>
 
 ---
 
@@ -456,10 +438,9 @@ The real-time log streaming subsystem employs state transitions designed to surv
 
 ### 7.1 WebSocket Protocol State Machine Diagram
 
-![WebSocket Protocol State Machine](diagrams/07-websocket-realtime-protocol.svg)
+![WebSocket Protocol State Machine](diagrams/websocket-flow.png)
 
-<details>
-<summary>▶ Click to view Mermaid.js source for WebSocket State Machine</summary>
+### 7.2 Protocol State Machine Flowchart
 
 ```mermaid
 stateDiagram-v2
@@ -487,13 +468,6 @@ stateDiagram-v2
     POLLING_FALLBACK --> TERMINATED: Pipeline Completed
     TERMINATED --> [*]
 ```
-</details>
-
-### 7.2 WebSocket Protocol Features
-- **Query Parameter Auth:** Handshakes enforce valid JWT tokens via query parameter (`?token=...`), rejecting unauthenticated requests with HTTP 403 / Close Code 1008.
-- **Historical Catch-Up:** Queries previous log records from PostgreSQL before subscribing to the live Redis Pub/Sub channel.
-- **Circular Buffer:** Frontend stores up to 1,000 log lines in memory to prevent DOM layout thrashing.
-- **Auto-Scroll Override:** Automatically scrolls to bottom unless the developer scrolls up to inspect an error.
 
 ---
 
@@ -503,31 +477,30 @@ StackForge implements an enterprise telemetry architecture separating numeric ti
 
 ### 8.1 Observability Dataflow Diagram
 
-![Observability Dataflow Diagram](diagrams/08-observability-telemetry-pipeline.svg)
+![Observability Dataflow Diagram](diagrams/observability.png)
 
-<details>
-<summary>▶ Click to view Mermaid.js source for Observability Pipeline</summary>
+### 8.2 Observability Pipeline Flowchart
 
 ```mermaid
 flowchart TD
     subgraph AppSources ["Telemetry Producers"]
         FastAPI["FastAPI Backend (:8000)<br/>Prometheus Middleware"]
-        Containers["Docker Engine Daemon<br/>Container stdout & stderr logs"]
+        Containers["Docker Engine Daemon<br/>Container stdout and stderr logs"]
     end
 
-    subgraph Collection ["Scrape & Forward Tier"]
+    subgraph Collection ["Scrape and Forward Tier"]
         Prometheus["Prometheus Server (:9090)<br/>Scrapes /metrics every 15s"]
-        Alloy["Grafana Alloy (:12345)<br/>Dynamically discovers & labels container logs"]
+        Alloy["Grafana Alloy (:12345)<br/>Dynamically discovers and labels container logs"]
     end
 
-    subgraph TSDBEngine ["Time-Series & Chunk Engines"]
+    subgraph TSDBEngine ["Time-Series and Chunk Engines"]
         PromTSDB[("Prometheus TSDB<br/>Metrics retention: 15 days")]
         LokiTSDB[("Grafana Loki (:3100)<br/>Compressed log chunks")]
     end
 
     subgraph Dashboards ["Unified Dashboards"]
         Grafana["Grafana 12.1 (:3001)<br/>Auto-Provisioned Dashboards"]
-        D1["Dashboard: 'StackForge Platform Overview'<br/>- API Requests & P95 Latency<br/>- Celery Pipeline Success/Failure"]
+        D1["Dashboard: 'StackForge Platform Overview'<br/>- API Requests and P95 Latency<br/>- Celery Pipeline Success/Failure"]
         D2["Dashboard: 'Live Container Logs'<br/>- Real-time LogQL search"]
     end
 
@@ -542,7 +515,6 @@ flowchart TD
 
     Grafana --- D1 & D2
 ```
-</details>
 
 ---
 
@@ -552,10 +524,9 @@ Every push to `main` triggers a complete multi-job matrix pipeline that validate
 
 ### 9.1 CI/CD Release Pipeline Diagram
 
-![CI/CD Pipeline Diagram](diagrams/09-cicd-release-pipeline.svg)
+![CI/CD Pipeline Diagram](diagrams/cicd-pipeline.png)
 
-<details>
-<summary>▶ Click to view Mermaid.js source for CI/CD Pipeline</summary>
+### 9.2 Release Pipeline Flowchart
 
 ```mermaid
 flowchart LR
@@ -572,7 +543,7 @@ flowchart LR
             B1["In-Memory SQLite patch"] --> B2["Mock redis at import"] --> B3["pytest tests/ -v"]
         end
 
-        subgraph Job3 ["Docker Build & Release"]
+        subgraph Job3 ["Docker Build and Release"]
             D1["Build backend image"]
             D2["Build frontend image"]
             D3["Publish to GHCR :latest"]
@@ -588,7 +559,6 @@ flowchart LR
     Job1 & Job2 --> Job3
     Job3 --> Deploy
 ```
-</details>
 
 ---
 

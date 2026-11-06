@@ -147,3 +147,4 @@
     <text x="500" y="25" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="12" font-weight="bold" fill="#a7f3d0" text-anchor="middle">✓ Lifecycle Complete: Durable ACID State Persisted in PostgreSQL • Live Terminal Auto-Scrolls with Build Trace</text>
   </g>
 </svg>
+
