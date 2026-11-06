@@ -96,6 +96,21 @@ flowchart TD
 
 ---
 
+## 📚 Engineering Documentation Suite
+
+StackForge includes a complete suite of six industry-standard engineering documents located in `docs/`:
+
+| Document | Purpose & Scope | Target Audience |
+| :--- | :--- | :--- |
+| [**`docs/PRD.md`**](docs/PRD.md) | **Product Requirements Document:** Vision, core personas, functional/non-functional requirements, and simulated vs real boundaries. | Product Leads & Engineering Managers |
+| [**`docs/Architecture.md`**](docs/Architecture.md) | **System Architecture (HLD & LLD):** C4 diagrams, Deploy Packet lifecycle, WebSocket protocol, database ER model, and design trade-offs. | System Architects & Senior Engineers |
+| [**`docs/RULES.md`**](docs/RULES.md) | **Engineering Standards & Conventions:** 12-factor principles, Pydantic/SQLAlchemy standards, strict TypeScript, Git discipline, and security rules. | Core Contributors & Code Reviewers |
+| [**`docs/DESIGN.md`**](docs/DESIGN.md) | **UI/UX Design System:** Developer cockpit aesthetic, OKLCH color tokens, typography, atomic components, and live terminal architecture. | Frontend Engineers & UI Designers |
+| [**`docs/TASK.md`**](docs/TASK.md) | **Work Breakdown Structure & Milestones:** Chronological history from Phase 1 through Phase 5, PR #1 audit record, and future roadmap. | Project Leads & DevOps Engineers |
+| [**`docs/MEMORY.md`**](docs/MEMORY.md) | **Runtime State & Interview Study Guide:** Active container registry, local credentials, 30s elevator pitch, and top 5 senior interview Q&As. | Technical Interview Prep & DevOps SREs |
+
+---
+
 ## 🛠️ Technology Stack & Scope Clarifications
 
 | Category | Implemented Technologies | Architecture Scope & Clarifications |
